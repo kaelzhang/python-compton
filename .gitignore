@@ -1,3 +1,6 @@
+# Jupyter lab
+.ipynb_*
+
 # Python
 __pycache__
 *.pyc
@@ -57,6 +60,8 @@ old/
 *-old/
 *-notrack/
 no-track/
+no_track
+*.no_track.*
 build/
 combo/
 reference/

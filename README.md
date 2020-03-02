@@ -15,19 +15,24 @@
 
 # compton-futu
 
-Futu quant
+Ost.AI quant for futu
 
-## Install
+## Design
 
-```sh
-$ pip install compton-futu
-```
+### Provides a restful API
 
-## Usage
+> For now (2020-03-02), Python gRPC does **NOT** support asyncio
+> So, we only provide a rest APIs
 
-```py
-import compton_futu
-```
+- subscribe to a new stock code
+
+## ENV
+
+> Actually, all ENV variables are of string type
+
+- **SERVER_PORT?** `int=80` server port
+- **FUTU_HOST** `str` host of FutuOpenD
+- **FUTU_PORT** `str=11111` port of FutuOpenD
 
 ## License
 
