@@ -1,17 +1,7 @@
+from aiohttp import web
+
 from .server import Server
-from .server.views import *
-from .config import (
-    SERVER_PORT,
-    FUTU_HOST,
-    FUTU_PORT
-)
+from .config import SERVER_PORT
+from .routes import routes
 
-app = Server(dict(
-    port=SERVER_PORT
-))
-
-@app.put('/subscribe')
-async def subscribe(request):
-    pass
-
-start()
+app = Server(port=SERVER_PORT, routes=routes)

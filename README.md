@@ -22,6 +22,7 @@ Ost.AI quant for futu
 ### Provides a restful API
 
 > For now (2020-03-02), Python gRPC does **NOT** support asyncio
+
 > So, we only provide a rest APIs
 
 - subscribe to a new stock code
