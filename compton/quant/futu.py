@@ -5,9 +5,14 @@ from futu import (
 )
 # import matplotlib.pyplot as plt
 
+from .stock import StockManager
+
 class FutuContext:
     def __init__(self, host, port):
-        self._ctx = OpenQuoteContext(host=host, port=port)
+        ctx = OpenQuoteContext(host=host, port=port)
+        self._ctx = ctx
+
+        self._stock_manager = StockManager(ctx)
 
     def subscribe(self, codes):
         ret, err_message = self._ctx.subscribe(codes, [
@@ -23,6 +28,8 @@ class FutuContext:
         if ret != RET_OK:
             return False, err_message
 
+        self._stock_manager.add(codes)
+
         return True, None
 
     def unsubscribe(self, codes):
@@ -33,5 +40,6 @@ class FutuContext:
         if ret != RET_OK:
             return False, err_message
 
-        return True, None
+        self._stock_manager.remove(codes)
 
+        return True, None

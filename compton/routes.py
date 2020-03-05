@@ -1,15 +1,9 @@
 from aiohttp import web
 
 from .server import ResponseException
-from .quant.futu import FutuContext
 from .config import (
     FUTU_HOST,
     FUTU_PORT
-)
-
-futu = FutuContext(
-    host=FUTU_HOST,
-    port=FUTU_PORT
 )
 
 routes = web.RouteTableDef()

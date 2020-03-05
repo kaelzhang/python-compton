@@ -32,8 +32,8 @@ Ost.AI quant for futu
 > Actually, all ENV variables are of string type
 
 - **SERVER_PORT?** `int=80` server port
-- **FUTU_HOST** `str` host of FutuOpenD
-- **FUTU_PORT** `str=11111` port of FutuOpenD
+- **FUTU_HOST?** `str=localhost` host of FutuOpenD
+- **FUTU_PORT?** `int=11111` port of FutuOpenD
 
 ## License
 
