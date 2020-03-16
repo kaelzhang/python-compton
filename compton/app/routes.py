@@ -1,6 +1,6 @@
 from aiohttp import web
 
-from .server import ResponseException
+from compton.server import ResponseException
 from .config import (
     FUTU_HOST,
     FUTU_PORT

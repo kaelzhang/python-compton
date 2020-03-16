@@ -1,32 +1,31 @@
-import asyncio
-from concurrent.futures import ThreadPoolExecutor
+import logging
+
+from stock_pandas import StockDataFrame
+import pandas as pd
 
 from futu import (
     CurKlineHandlerBase,
     RET_OK, RET_ERROR
 )
 
+from .provider import Provider
+
+
 class StockManager:
-    def __init__(self, context):
+    """The real entry of the application
+    """
+
+    def __init__(
+        self,
+        provider: Provider,
+        strategy:
+    ):
         self._stocks = {}
-        self._context = context
+        self._provider = provider
 
-        class KlineHandler(CurKlineHandlerBase):
-            def on_recv_rsp(s, res):
-                ret_code, data = super().on_recv_rsp(res)
-
-                if ret_code != RET_OK:
-                    # TODO: log
-                    return RET_ERROR, data
-
-                self._receive(data)
-
-                return RET_OK, data
-
-        context.set_handler(KlineHandler())
+        self._provider.set_handler(_, self._receive)
 
     def _receive(self, data):
-        code = data['code'][0]
         if not self._has(code):
             return
 
@@ -67,9 +66,15 @@ class StockManager:
         # removed
         return True
 
-fetch_executor = ThreadPoolExecutor(
-    max_workers = 5
-)
+
+
+
+TIME_KEY = 'time_key'
+
+def make_time_key_datetime(target: pd.DataFrame) -> pd.DataFrame:
+    target[TIME_KEY] = pd.to_datatime(target[TIME_KEY])
+    return target
+
 
 class Stock:
     def __init__(self, code, context):
@@ -77,29 +82,42 @@ class Stock:
         self._context = context
 
         self._kline = None
+        self._not_updated = None
 
     def destroy(self):
         self._code = None
         self._kline = None
         self._context = None
 
-    # This method is not a coroutine function,
-    #   and will block
-    def _fetch_kline(self):
-        ret, kline = self._context.get_cur_kline(self._code, 100)
 
-        if ret != RET_OK:
-            # TODO: error handling
-            return None
 
-        return kline
+    def receive(self, update):
+        kline_df = self._kline
 
-    async def _fetch(self):
-        loop = asyncio.get_event_loop()
-        return await loop.run_in_executor(
-            fetch_executor,
-            self._fetch_kline
+        if not kline:
+            self._not_updated = self._update_message(self._not_updated, update)
+            return
+
+        self._kline = self._update_message(self._kline, update)
+
+    def _update_message(
+        self,
+        target,
+        update
+    ) -> StockDataFrame:
+        if target is None:
+            return make_time_key_datetime(StockDataFrame(update))
+
+        # For now, we don't use DateTimeIndex for
+        # DateTimeIndex is really buggy that even we can't drop raws
+        new_kline_time = update.iloc[0]
+
+        duplicates = target[target[TIME_KEY] >= new_kline_time]
+
+        if len(duplicates):
+            target = target.drop(duplicates.index)
+
+        returnn target.append(
+            make_time_key_datetime(update),
+            ignore_index=True
         )
-
-    def receive(self, data):
-        pass

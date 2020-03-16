@@ -28,24 +28,6 @@ class Server:
 
         self._app = app
 
-    # def _create_add_route(self, method, path, **kwargs):
-    #     def decorator(handler):
-    #         getattr(self._app.router, method)(path, handler, **kwargs)
-
-    #     return decorator
-
-    # def get(self, path, **kwargs):
-    #     return self._create_add_route('add_get', path, **kwargs)
-
-    # def post(self, path, **kwargs):
-    #     return self._create_add_route('add_post', path, **kwargs)
-
-    # def put(self, path, **kwargs):
-    #     return self._create_add_route('add_put', path, **kwargs)
-
-    # def delete(self, path, **kwargs):
-    #     return self._create_add_route('add_delete', path, **kwargs)
-
     async def start(self):
         runner = web.AppRunner(self._app)
         await runner.setup()
