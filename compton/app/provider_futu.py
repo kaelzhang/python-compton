@@ -33,10 +33,10 @@ class FutuProvider(Provider):
     # This method is not a coroutine function,
     #   and will block
     def _fetch_kline(self, code, _, limit):
-        ret, kline = self._ctx.get_cur_kline(self._code, limit)
+        ret, kline = self._ctx.get_cur_kline(code, limit)
 
         if ret != RET_OK:
-            logger.error('fails to fetch kline for stock %s', self._code)
+            logger.error('fails to fetch kline for stock %s', code)
             return None
 
         return kline
@@ -83,7 +83,7 @@ class FutuProvider(Provider):
                 if ret_code != RET_OK:
                     return RET_ERROR, data
 
-                code = res['code'][0]
+                code = data['code'][0]
 
                 receive(code, UpdateType.KLINE, data)
 

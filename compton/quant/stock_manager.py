@@ -27,7 +27,7 @@ class StockManager:
         self._provider = provider
         # self._strategy = strategy
 
-        self._provider.set_handler(UpdateType.KLINE, self._receive)
+        self._provider.set_receiver(UpdateType.KLINE, self._receive)
 
     def _receive(
         self,
@@ -92,7 +92,7 @@ TIME_KEY = 'time_key'
 
 
 def make_time_key_datetime(target: pd.DataFrame) -> pd.DataFrame:
-    target[TIME_KEY] = pd.to_datatime(target[TIME_KEY])
+    target[TIME_KEY] = pd.to_datetime(target[TIME_KEY])
     return target
 
 
@@ -113,9 +113,15 @@ class Stock:
         self._not_updated = None
 
     async def _fetch_kline(self):
-        kline = self._provider.get_kline(self._code, TimeSpan.DAY, 100)
-        self._kline = self._update_kline(None, kline)
-        print(self._kline)
+        kline = await self._provider.get_kline(self._code, TimeSpan.DAY, 100)
+
+        not_updated = self._not_updated
+        self._not_updated = None
+
+        if not_updated:
+            self._kline = self._update_kline(kline, not_updated)
+        else:
+            self._kline = self._update_kline(None, kline)
 
     def receive(self, _, update):
         if not self._kline:
@@ -123,7 +129,6 @@ class Stock:
             return
 
         self._kline = self._update_kline(self._kline, update)
-        print(self._kline)
 
     def _update_kline(
         self,
@@ -135,11 +140,15 @@ class Stock:
 
         # For now, we don't use DateTimeIndex for
         # DateTimeIndex is really buggy that even we can't drop raws
-        new_kline_time = update.iloc[0]
+        new_kline_time = update.iloc[0][TIME_KEY]
 
         duplicates = target[target[TIME_KEY] >= new_kline_time]
+        duplicates_len = len(duplicates)
 
-        if len(duplicates):
+        if duplicates_len:
+            if duplicates_len == len(target):
+                return make_time_key_datetime(StockDataFrame(update))
+
             target = target.drop(duplicates.index)
 
         return target.append(
