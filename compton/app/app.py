@@ -1,5 +1,3 @@
-from aiohttp import web
-
 from compton.server import Server
 from .config import SERVER_PORT
 from .routes import routes

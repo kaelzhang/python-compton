@@ -2,10 +2,17 @@ import asyncio
 from concurrent.futures import ThreadPoolExecutor
 import logging
 
+from futu import (
+    OpenQuoteContext,
+    CurKlineHandlerBase,
+    SubType,
+    RET_OK, RET_ERROR
+)
+
 from compton.quant.provider import (
     Provider,
     UpdateType,
-    TimeSpan
+    # TimeSpan
 )
 
 
@@ -20,7 +27,7 @@ class FutuProvider(Provider):
 
         self._ctx = ctx
         self._fetch_executor = ThreadPoolExecutor(
-            max_workers = self.EXECUTOR_MAX_WORKERS
+            max_workers=self.EXECUTOR_MAX_WORKERS
         )
 
     # This method is not a coroutine function,
@@ -38,7 +45,7 @@ class FutuProvider(Provider):
     async def get_kline(self, code, _, limit):
         loop = asyncio.get_event_loop()
         return await loop.run_in_executor(
-            fetch_executor,
+            self._fetch_executor,
             self._fetch_kline, code, _, limit
         )
 
@@ -68,7 +75,7 @@ class FutuProvider(Provider):
 
         return True, None
 
-    def set_receiver(_, receive):
+    def set_receiver(self, _, receive):
         class KlineHandler(CurKlineHandlerBase):
             def on_recv_rsp(s, res):
                 ret_code, data = super().on_recv_rsp(res)

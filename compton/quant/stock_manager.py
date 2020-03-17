@@ -1,5 +1,5 @@
 import asyncio
-import logging
+# import logging
 from typing import (
     Tuple
 )
@@ -7,14 +7,10 @@ from typing import (
 from stock_pandas import StockDataFrame
 import pandas as pd
 
-from futu import (
-    CurKlineHandlerBase,
-    RET_OK, RET_ERROR
-)
-
 from .provider import (
     Provider,
-    TimeSpan
+    TimeSpan,
+    UpdateType
 )
 
 
@@ -31,13 +27,18 @@ class StockManager:
         self._provider = provider
         # self._strategy = strategy
 
-        self._provider.set_handler(_, self._receive)
+        self._provider.set_handler(UpdateType.KLINE, self._receive)
 
-    def _receive(self, code, update_type, data):
+    def _receive(
+        self,
+        code: str,
+        update_type: int,
+        data
+    ):
         if not self._has(code):
             return
 
-        self._stocks.get(code).receive(update_time, data)
+        self._stocks.get(code).receive(update_type, data)
 
     def _get_stock(self, code):
         stock = self._stocks.get(code, None)
@@ -72,8 +73,7 @@ class StockManager:
             else:
                 errored[code] = err_msg
 
-        return added, already_added, errored
-
+        return subscribed, already, errored
 
     # def remove(self, code):
     #     if not self._has(code):
@@ -89,6 +89,7 @@ class StockManager:
 
 
 TIME_KEY = 'time_key'
+
 
 def make_time_key_datetime(target: pd.DataFrame) -> pd.DataFrame:
     target[TIME_KEY] = pd.to_datatime(target[TIME_KEY])
@@ -111,15 +112,13 @@ class Stock:
         self._provider = None
         self._not_updated = None
 
-    async def _fetch_kline():
+    async def _fetch_kline(self):
         kline = self._provider.get_kline(self._code, TimeSpan.DAY, 100)
         self._kline = self._update_kline(None, kline)
         print(self._kline)
 
     def receive(self, _, update):
-        kline_df = self._kline
-
-        if not kline:
+        if not self._kline:
             self._not_updated = self._update_kline(self._not_updated, update)
             return
 

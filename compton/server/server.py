@@ -5,24 +5,26 @@ from aiohttp.web import middleware
 
 from .exceptions import ResponseException
 
+
 @middleware
 async def response(request, handler):
     try:
         resp = await handler(request)
     except ResponseException as e:
         return web.json_response(dict(
-            code = e.code,
-            message = e.message
-        ), status = e.status)
+            code=e.code,
+            message=e.message
+        ), status=e.status)
     else:
         return web.json_response(resp)
+
 
 class Server:
     def __init__(self, port, routes):
         self._port = port
 
         app = web.Application(
-            middlewares = [response]
+            middlewares=[response]
         )
         app.add_routes(routes)
 

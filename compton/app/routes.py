@@ -1,6 +1,6 @@
 from aiohttp import web
 
-from compton.server import ResponseException
+from compton.server.exceptions import ResponseException
 from .config import (
     FUTU_HOST,
     FUTU_PORT
@@ -13,6 +13,12 @@ stock = StockManager(provider)
 
 routes = web.RouteTableDef()
 
+
+def create_err_msg(errored):
+    for code, msg in enumerate(errored):
+        return f'fails to subscribe {code}: {msg}'
+
+
 @routes.post('/subscribe')
 async def subscribe(request):
     body = await request.json()
@@ -23,13 +29,14 @@ async def subscribe(request):
 
     subscribed, already, errored = stock.subscribe(code_list)
 
-    if not ok:
+    if errored:
+        err_msg = create_err_msg(errored)
         raise ResponseException(err_msg)
 
     return dict(
-        subscribed = subscribed,
-        already = already,
-        errored = errored
+        subscribed=subscribed,
+        already=already,
+        errored=errored
     )
 
 # @routes.delete('/subscribe')

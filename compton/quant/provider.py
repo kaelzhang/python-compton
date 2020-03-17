@@ -7,12 +7,6 @@ from typing import (
 
 from pandas import DataFrame
 
-from futu import (
-    OpenQuoteContext,
-    SubType,
-    RET_OK
-)
-
 
 class UpdateType:
     KLINE = 1
