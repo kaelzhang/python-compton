@@ -17,6 +17,12 @@ build: compton
 	rm -rf dist
 	python setup.py sdist bdist_wheel
 
+start:
+	python start.py
+
+dev:
+	SERVER_PORT=8081 python start.py
+
 # publish:
 # 	make build
 # 	twine upload --config-file ~/.pypirc -r pypi dist/*

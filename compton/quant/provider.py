@@ -13,7 +13,13 @@ from futu import (
     RET_OK
 )
 
-from .stock import StockManager
+
+class UpdateType:
+    KLINE = 1
+
+
+class TimeSpan:
+    DAY = 1
 
 
 class Provider:
@@ -23,6 +29,7 @@ class Provider:
     async def get_kline(
         self,
         code: str,
+        span: int,
         limit: int
     ) -> Optional[DataFrame]:
         """Gets the kline dataframe
@@ -55,7 +62,3 @@ class Provider:
         codes: List[str]
     ) -> Tuple[bool, Optional[str]]:
         raise NotImplementedError
-
-
-class UpdateType:
-    KLINE = 1

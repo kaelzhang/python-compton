@@ -2,7 +2,11 @@ import asyncio
 from concurrent.futures import ThreadPoolExecutor
 import logging
 
-from compton.quant.provider import Provider, UpdateType
+from compton.quant.provider import (
+    Provider,
+    UpdateType,
+    TimeSpan
+)
 
 
 logger = logging.getLogger(__name__)
@@ -21,8 +25,8 @@ class FutuProvider(Provider):
 
     # This method is not a coroutine function,
     #   and will block
-    def _fetch_kline(self, code, limit):
-        ret, kline = self._context.get_cur_kline(self._code, limit)
+    def _fetch_kline(self, code, _, limit):
+        ret, kline = self._ctx.get_cur_kline(self._code, limit)
 
         if ret != RET_OK:
             logger.error('fails to fetch kline for stock %s', self._code)
@@ -30,11 +34,12 @@ class FutuProvider(Provider):
 
         return kline
 
-    async def get_kline(self, code, limit):
+    # TODO: get kline for other timespan than DAY
+    async def get_kline(self, code, _, limit):
         loop = asyncio.get_event_loop()
         return await loop.run_in_executor(
             fetch_executor,
-            self._fetch_kline, code, limit
+            self._fetch_kline, code, _, limit
         )
 
     def subscribe(self, codes):
@@ -51,8 +56,6 @@ class FutuProvider(Provider):
         if ret != RET_OK:
             return False, err_message
 
-        self._stock_manager.add(codes)
-
         return True, None
 
     def unsubscribe(self, codes):
@@ -62,8 +65,6 @@ class FutuProvider(Provider):
 
         if ret != RET_OK:
             return False, err_message
-
-        self._stock_manager.remove(codes)
 
         return True, None
 
