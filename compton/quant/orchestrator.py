@@ -1,7 +1,8 @@
 import asyncio
 # import logging
 from typing import (
-    Tuple
+    Tuple,
+    Callable
 )
 
 from stock_pandas import StockDataFrame
@@ -9,6 +10,7 @@ import pandas as pd
 
 from .provider import (
     Provider,
+    ProviderType,
     TimeSpan,
     UpdateType
 )
@@ -20,14 +22,26 @@ class StockManager:
 
     def __init__(
         self,
-        provider: Provider,
+        prepare: Callable
         # strategy
     ):
         self._stocks = {}
-        self._provider = provider
+        self._providers = {}
+        # self._provider = provider
+
         # self._strategy = strategy
 
-        self._provider.set_receiver(UpdateType.KLINE, self._receive)
+        # self._provider.set_receiver(UpdateType.KLINE, self._receive)
+
+    def register_provider(
+        self,
+        provider_type: int,
+        provider: Provider
+    ):
+        """
+        """
+
+        self._providers[provider_type] = provider
 
     def _receive(
         self,
@@ -111,6 +125,10 @@ class Stock:
         self._kline = None
         self._provider = None
         self._not_updated = None
+
+    @property
+    def kline(self):
+        return self._kline
 
     async def _fetch_kline(self):
         kline = await self._provider.get_kline(self._code, TimeSpan.DAY, 100)

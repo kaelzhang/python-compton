@@ -1,15 +1,6 @@
 from aiohttp import web
 
 from compton.server.exceptions import ResponseException
-from .config import (
-    FUTU_HOST,
-    FUTU_PORT
-)
-from .provider_futu import FutuProvider
-from compton.quant.stock_manager import StockManager
-
-provider = FutuProvider(FUTU_HOST, FUTU_PORT)
-stock = StockManager(provider)
 
 routes = web.RouteTableDef()
 
@@ -27,6 +18,7 @@ async def subscribe(request):
     if not code_list:
         raise ResponseException('code_list is empty or not specified')
 
+    stock = request.app['stock_manager']
     subscribed, already, errored = stock.subscribe(code_list)
 
     if errored:

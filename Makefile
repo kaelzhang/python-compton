@@ -5,10 +5,10 @@ install:
 	pip install -r requirements.txt -r test-requirements.txt
 
 lint:
-	flake8 compton test
+	flake8 compton test *.py
 
 fix:
-	autopep8 --in-place --aggressive -r compton test
+	autopep8 --in-place --aggressive -r compton test *.py
 
 report:
 	codecov

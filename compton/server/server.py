@@ -22,16 +22,27 @@ async def response(request, handler):
 class Server:
     def __init__(self, port, routes):
         self._port = port
+        self._routes = routes
+        self._stock_manager = None
 
+    def _create_app(self):
         app = web.Application(
             middlewares=[response]
         )
-        app.add_routes(routes)
+        app.add_routes(self._routes)
 
-        self._app = app
+        if self._stock_manager:
+            app['stock_manager'] = self._stock_manager
+
+        return app
+
+    def set_stock_manager(self, stock_manager):
+        self._stock_manager = stock_manager
 
     async def start(self):
-        runner = web.AppRunner(self._app)
+        app = self._create_app()
+
+        runner = web.AppRunner(app)
         await runner.setup()
 
         site = web.TCPSite(runner, 'localhost', self._port)

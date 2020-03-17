@@ -8,6 +8,10 @@ from typing import (
 from pandas import DataFrame
 
 
+class ProviderType:
+    KLINE = 1
+
+
 class UpdateType:
     KLINE = 1
 
@@ -18,15 +22,18 @@ class TimeSpan:
 
 class Provider:
     """Provide is used to get the latest data remotely
+
+    A provide should:
+    - handle different stock codes
+    -
     """
 
-    async def get_kline(
+    async def init(
         self,
         code: str,
-        span: int,
-        limit: int
+        *args
     ) -> Optional[DataFrame]:
-        """Gets the kline dataframe
+        """Initialize the data from the very beginning
         """
 
         raise NotImplementedError
@@ -40,19 +47,19 @@ class Provider:
 
         raise NotImplementedError
 
-    def subscribe(
-        self,
-        codes: List[str]
-    ) -> Tuple[bool, Optional[str]]:
-        """Subscribe to the provider.
+    # def subscribe(
+    #     self,
+    #     codes: List[str]
+    # ) -> Tuple[bool, Optional[str]]:
+    #     """Subscribe to the provider.
 
-        This method could do nothing.
-        """
+    #     This method could do nothing.
+    #     """
 
-        raise NotImplementedError
+    #     raise NotImplementedError
 
-    def unsubscribe(
-        self,
-        codes: List[str]
-    ) -> Tuple[bool, Optional[str]]:
-        raise NotImplementedError
+    # def unsubscribe(
+    #     self,
+    #     codes: List[str]
+    # ) -> Tuple[bool, Optional[str]]:
+    #     raise NotImplementedError
