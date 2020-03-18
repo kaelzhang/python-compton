@@ -9,24 +9,24 @@
 - Strategies inherit from Consumers
 - Persistencers also inherit from Consumers to save the data to databases
 
-- Everything above has nothing to do with code names
+- Everything above has nothing to do with symbol names
 - DataTypes together with their corresponding parameters, we call it Vectors
-- The store is a dict of codes
-- A code is a dict of vector-dataframe or vector-object pairs
+- The store is a dict of symbols
+- A symbol is a dict of vector-dataframe or vector-object pairs
 
 ```python
 store = {
-  code: {
+  symbol: {
     vector: object
   }
 }
 ```
 
-- A strategies is codename-agnostic
+- A strategies is symbol-agnostic
 - There is also somewhere to store parameters from manual tuning which we call it `Tuning`
-- We could define Tuning of a codename by call tune method of O
+- We could define Tuning of a symbol by call tune method of O
 
-- Consumers could only subscribe to vectors, but not code
-- Reducers could only access `store[code]`, but not the store itself
+- Consumers could only subscribe to vectors, but not symbol
+- Reducers could only access `store[symbol]`, but not the store itself
 
 - Consumers could also define whether the data emitting should be throttled

@@ -1,51 +1,52 @@
+from abc import ABC, abstractmethod
 from typing import (
     Callable,
-    Tuple,
-    Optional,
-    List
+    Optional
 )
 
 from pandas import DataFrame
 
-
-class ProviderType:
-    KLINE = 1
-
-
-class UpdateType:
-    KLINE = 1
+from .types import (
+    Vector,
+    Symbol,
+    Payload
+)
 
 
-class TimeSpan:
-    DAY = 1
-
-
-class Provider:
-    """Provide is used to get the latest data remotely
-
-    A provide should:
-    - handle different stock codes
-    -
+class Provider(ABC):
+    """
     """
 
+    def __str__(self):
+        return f'provider{self.vector}'
+
+    @property
+    @abstractmethod
+    def vector(self) -> Vector:
+        """A provider should only have one vector
+        which means a provider should only handle a single type of message
+        """
+
+        return
+
+    @abstractmethod
     async def init(
         self,
-        code: str,
-        *args
+        symbol: Symbol
     ) -> Optional[DataFrame]:
         """Initialize the data from the very beginning
         """
 
-        raise NotImplementedError
+        return
 
-    def set_receiver(
-        receiver_type: int,
-        receiver: Callable
+    @abstractmethod
+    def update(
+        dispatch: Callable[Symbol, Payload]
     ) -> None:
         """Sets the receiver to receive update messages
         """
 
-        raise NotImplementedError
+        return
 
     # def subscribe(
     #     self,
