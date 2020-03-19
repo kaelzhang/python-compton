@@ -17,6 +17,13 @@ class Provider(ABC):
     """
     """
 
+    @staticmethod
+    def check(provider):
+        if not isinstance(provider, Provider):
+            raise ValueError(
+                f'provider must be an instance of Provider, but got `{provider}`'  # noqa: E501
+            )
+
     def __str__(self):
         return f'provider{self.vector}'
 
@@ -40,27 +47,10 @@ class Provider(ABC):
         return
 
     @abstractmethod
-    def update(
+    def when_update(
         dispatch: Callable[Symbol, Payload]
     ) -> None:
         """Sets the receiver to receive update messages
         """
 
         return
-
-    # def subscribe(
-    #     self,
-    #     codes: List[str]
-    # ) -> Tuple[bool, Optional[str]]:
-    #     """Subscribe to the provider.
-
-    #     This method could do nothing.
-    #     """
-
-    #     raise NotImplementedError
-
-    # def unsubscribe(
-    #     self,
-    #     codes: List[str]
-    # ) -> Tuple[bool, Optional[str]]:
-    #     raise NotImplementedError

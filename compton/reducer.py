@@ -16,6 +16,16 @@ from .common import (
 
 
 class Reducer(ABC):
+    """
+    """
+
+    @staticmethod
+    def check(reducer):
+        if not isinstance(reducer, Reducer):
+            raise ValueError(
+                f'reducer must be an instance of Reducer, but got `{reducer}`'  # noqa: E501
+            )
+
     def __init__(self):
         self._not_updated = {}
 
@@ -64,6 +74,7 @@ class Reducer(ABC):
         not_updated = parent.get(last, None)
 
         if not previous:
+            # If not initialized
             parent[last] = self.merge(
                 not_updated,
                 payload
@@ -71,7 +82,10 @@ class Reducer(ABC):
 
             return False, None
 
-        return True, self.merge(previous, not_updated)
+        if not_updated:
+            payload = self.merge(not_updated, payload)
+
+        return True, self.merge(previous, payload)
 
     @abstractmethod
     def merge(

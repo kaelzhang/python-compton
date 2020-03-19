@@ -76,16 +76,40 @@ def set_hierachical(
 
 def get_hierachical(
     target: dict,
-    vector: tuple
-):
-    for key in vector:
+    vector: tuple,
+    default: Any = None,
+    set_if_not_exists: bool = False
+) -> Any:
+    """Get a property from a nested dict
+
+    Args:
+        target (dict): the dict
+        vector (tuple):
+        default (Any): if the value does not exist,
+        then will return the default value
+        no_set (:obj:`bool`, optional)
+    """
+
+    last = vector[-1]
+
+    for key in vector[:-1]:
         if key not in target:
-            return
+            if set_if_not_exists:
+                # Then we set the value of key as a dict
+                target[key] = {}
+                continue
+            else:
+                return default
 
         current = target[key]
 
-        if type(current) is not dict:
-            return current
+    if last in current:
+        return current[last]
+
+    if set_if_not_exists:
+        current[last] = default
+
+    return default
 
 
 VECTOR_SEPARATOR = ','

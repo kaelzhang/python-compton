@@ -12,6 +12,13 @@ from .types import (
 
 
 class Consumer(ABC):
+    @staticmethod
+    def check(consumer):
+        if not isinstance(consumer, Consumer):
+            raise ValueError(
+                f'consumer must be an instance of Consumer, but got `{consumer}`'  # noqa: E501
+            )
+
     @property
     @abstractmethod
     def vectors(self) -> List[Vector]:
@@ -33,10 +40,7 @@ class ConsumerSentinel:
         self,
         consumer: Consumer
     ):
-        if not isinstance(consumer, Consumer):
-            raise ValueError(
-                f'consumer must be an instance of Consumer, but got `{consumer}`'  # noqa: E501
-            )
+        Consumer.check(consumer)
 
         self._consumer = consumer
         self._vectors = set(consumer.vectors)
