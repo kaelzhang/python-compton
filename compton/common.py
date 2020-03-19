@@ -2,43 +2,28 @@ from typing import (
     Any
 )
 
+from enum import Enum
 
-def is_hashable(subject: Any) -> bool:
-    try:
-        hash(subject)
+
+def match_vector(vector, target) -> bool:
+    """Returns `True` if `vector` matches `target`
+
+    If two vectors has a common sub vector at the beginning, then
+    the shorter one matches the longer one
+    """
+
+    if vector == target:
         return True
-    except Exception:
+
+    len_v = len(vector)
+    len_t = len(target)
+
+    if len_v > len_t:
         return False
 
+    sub_target = target[:len_v]
 
-def get_vector(target):
-    vector = target.vector
-
-    if not is_hashable(vector):
-        raise ValueError(f'{target}.vector is not hashable')
-
-    return vector
-
-
-# def match_vector(vector, target) -> bool:
-#     """Returns `True` if `vector` matches `target`
-
-#     If two vectors has a common sub vector at the beginning, then
-#     the shorter one matches the longer one
-#     """
-
-#     if vector == target:
-#         return True
-
-#     len_v = len(vector)
-#     len_t = len(target)
-
-#     if len_v < len_t:
-#         return False
-
-#     sub_target = target[:len_v]
-
-#     return vector == sub_target
+    return vector == sub_target
 
 
 def set_hierachical(
@@ -112,8 +97,46 @@ def get_hierachical(
     return default
 
 
+Symbol = str
+Payload = object
+Vector = tuple
+
+
 VECTOR_SEPARATOR = ','
 
 
 def stringify_vector(list_like):
     return f'<{VECTOR_SEPARATOR.join([str(x) for x in list_like])}>'
+
+
+def is_hashable(subject: Any) -> bool:
+    try:
+        hash(subject)
+        return True
+    except Exception:
+        return False
+
+
+def check_vector(vector):
+    if not isinstance(vector, tuple):
+        raise ValueError(
+            f'vector must be a tuple, but got `{vector}`'
+        )
+
+
+def get_vector(target):
+    vector = target.vector
+    check_vector(vector)
+
+    if not is_hashable(vector):
+        raise ValueError(f'{target}.vector is not hashable')
+
+    return vector
+
+
+class DataType(Enum):
+    KLINE = 1
+
+
+class TimeSpan(Enum):
+    DAY = 1

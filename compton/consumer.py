@@ -5,9 +5,9 @@ from typing import (
     List
 )
 
-from .types import (
-    Vector,
-    Payload
+from .common import (
+    Payload,
+    Vector
 )
 
 
@@ -24,10 +24,10 @@ class Consumer(ABC):
     def vectors(self) -> List[Vector]:
         return
 
-    @abstractmethod
     def should_process(self, symbol, *args) -> bool:
         return True
 
+    @abstractmethod
     async def process(self, symbol, *args):
         pass
 

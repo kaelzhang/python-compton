@@ -4,14 +4,13 @@ from typing import (
     Tuple,
 )
 
-from .types import (
+from .common import (
+    get_hierachical,
+    stringify_vector,
+
     Vector,
     Symbol,
     Payload
-)
-
-from .common import (
-    get_hierachical
 )
 
 
@@ -30,7 +29,7 @@ class Reducer(ABC):
         self._not_updated = {}
 
     def __str__(self):
-        return f'reducer{self.vector}'
+        return f'reducer{stringify_vector(self.vector)}'
 
     @property
     @abstractmethod

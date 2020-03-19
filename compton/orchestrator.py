@@ -12,18 +12,19 @@ from .consumer import (
 )
 
 from .reducer import Reducer
-from .types import (
-    Vector,
-    Symbol,
-    Payload
-)
 
 from .common import (
+    match_vector,
     get_vector,
+    check_vector,
     is_hashable,
     stringify_vector,
     set_hierachical,
-    get_hierachical
+    get_hierachical,
+
+    Vector,
+    Symbol,
+    Payload
 )
 
 
@@ -46,6 +47,8 @@ class Orchestrator:
         self._reducers = {}
 
         self._apply_reducers(reducers)
+
+        print(self._reducers)
 
     def _apply_reducers(self, reducers):
         saved_reducers = self._reducers
@@ -74,12 +77,22 @@ class Orchestrator:
         Provider.check(provider)
 
         vector = get_vector(provider)
-        reducer = get_hierachical(self._saved_reducers, vector)
+        reducer = get_hierachical(self._reducers, vector)
 
         if reducer is None:
             raise KeyError(
-                f'a reducer{vector} must be defined before connecting to {provider}'  # noqa:E501
+                f'a reducer{stringify_vector(vector)} must be defined before connecting to {provider}'  # noqa:E501
             )
+
+        for provider_vector in self._providers.keys():
+            if match_vector(
+                provider_vector, vector
+            ) or match_vector(
+                vector, provider_vector
+            ):
+                raise KeyError(
+                    f'a provider{stringify_vector(provider_vector)} exists'
+                )
 
         self._providers[vector] = provider
 
@@ -95,6 +108,8 @@ class Orchestrator:
         vectors = consumer.vectors
 
         for vector in vectors:
+            check_vector(vector)
+
             if not is_hashable(vector):
                 raise ValueError(f'{vector} is not hashable')
 
@@ -177,7 +192,7 @@ class Orchestrator:
         tasks = []
 
         for vector, provider in enumerate(self._providers):
-            dispatch = self.dispatch(vector=vector)
+            dispatch = partial(self.dispatch, vector=vector)
             provider.when_update(dispatch)
 
             tasks.append(self._start_provider(symbol, provider))

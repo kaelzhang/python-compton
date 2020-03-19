@@ -6,7 +6,9 @@ from typing import (
 
 from pandas import DataFrame
 
-from .types import (
+from .common import (
+    stringify_vector,
+
     Vector,
     Symbol,
     Payload
@@ -25,7 +27,7 @@ class Provider(ABC):
             )
 
     def __str__(self):
-        return f'provider{self.vector}'
+        return f'provider{stringify_vector(self.vector)}'
 
     @property
     @abstractmethod
@@ -48,7 +50,7 @@ class Provider(ABC):
 
     @abstractmethod
     def when_update(
-        dispatch: Callable[Symbol, Payload]
+        dispatch: Callable[[Symbol, Payload], None]
     ) -> None:
         """Sets the receiver to receive update messages
         """
