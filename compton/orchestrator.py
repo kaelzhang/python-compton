@@ -21,6 +21,8 @@ from .common import (
     stringify_vector,
     set_hierachical,
     get_hierachical,
+    get_partial_hierachical,
+    start_background_task,
 
     Vector,
     Symbol,
@@ -47,8 +49,6 @@ class Orchestrator:
         self._reducers = {}
 
         self._apply_reducers(reducers)
-
-        print(self._reducers)
 
     def _apply_reducers(self, reducers):
         saved_reducers = self._reducers
@@ -77,7 +77,7 @@ class Orchestrator:
         Provider.check(provider)
 
         vector = get_vector(provider)
-        reducer = get_hierachical(self._reducers, vector)
+        reducer = get_partial_hierachical(self._reducers, vector)
 
         if reducer is None:
             raise KeyError(
@@ -128,15 +128,15 @@ class Orchestrator:
 
     def dispatch(
         self,
-        symbol: Symbol,
         vector: Vector,
+        symbol: Symbol,
         payload: Payload
     ):
         """Dispatch updates to a certain vector.
         This method is mainly used for testing purpose
         """
 
-        reducer = get_hierachical(self._reducers, vector)
+        reducer = get_partial_hierachical(self._reducers, vector)
 
         if reducer is None:
             raise KeyError(
@@ -161,7 +161,7 @@ class Orchestrator:
             return
 
         for consumer_sentinel in subscribed:
-            satisfied = consumer_sentinel.satisfy(vector)
+            satisfied = consumer_sentinel.satisfy(symbol, vector)
             if not satisfied:
                 continue
 
@@ -184,18 +184,17 @@ class Orchestrator:
         """Adds a new stock symbol to the orchestrator
         """
 
-        self._changed[symbol] = set()
-
-        asyncio.create_task(self._start_providers(symbol))
+        start_background_task(self._start_providers(symbol), logger)
 
     async def _start_providers(self, symbol: Symbol):
         tasks = []
 
-        for vector, provider in enumerate(self._providers):
-            dispatch = partial(self.dispatch, vector=vector)
+        for vector, provider in self._providers.items():
+            dispatch = partial(self.dispatch, vector)
             provider.when_update(dispatch)
 
-            tasks.append(self._start_provider(symbol, provider))
+            task = asyncio.create_task(self._start_provider(symbol, provider))
+            tasks.append(task)
 
         await asyncio.wait(tasks)
 

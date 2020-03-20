@@ -45,7 +45,7 @@ class ConsumerSentinel:
         self._consumer = consumer
         self._vectors = set(consumer.vectors)
 
-        self._changed = set()
+        self._changed = {}
         self._processing = False
 
     @property
@@ -64,7 +64,7 @@ class ConsumerSentinel:
         # For do not allow simultaneously processing
         return changed == self._vectors and not self._processing
 
-    def process(self, symbol, *payloads: List[Payload]):
+    def process(self, symbol, payloads: List[Payload]):
         if not self._consumer.should_process(symbol, *payloads):
             return
 
@@ -72,9 +72,9 @@ class ConsumerSentinel:
         self._changed[symbol].clear()
         self._processing = True
 
-        asyncio.create_task(self._process(*payloads))
+        asyncio.create_task(self._process(symbol, payloads))
 
-    async def _process(self, symbol, *payloads):
+    async def _process(self, symbol, payloads):
         try:
             await self._consumer.process(symbol, *payloads)
         except Exception as e:

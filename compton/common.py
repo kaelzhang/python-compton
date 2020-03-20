@@ -1,8 +1,22 @@
+import asyncio
 from typing import (
     Any
 )
 
 from enum import Enum
+
+
+async def background_task(coroutine, logger):
+    try:
+        await coroutine
+    except Exception as e:
+        logger.error('background task error: %s', e)
+
+
+def start_background_task(coroutine, logger):
+    asyncio.create_task(
+        background_task(coroutine, logger)
+    )
 
 
 def match_vector(vector, target) -> bool:
@@ -40,16 +54,22 @@ def set_hierachical(
 
     first = vector[0]
 
-    if first in target:
-        # There is a conflict
-        return False, [*context, first]
-
     if len(vector) == 1:
+        # Which means it is the last item of the vector,
+        # we just set the value
         target[first] = value
         return True, None
 
-    current = {}
-    target[first] = current
+    if first in target:
+        current = target[first]
+
+        if type(current) is not dict:
+            # There is a conflict
+            return False, [*context, first]
+    else:
+        # The next level does not exists, we just create it
+        current = {}
+        target[first] = current
 
     return set_hierachical(
         current,
@@ -86,15 +106,33 @@ def get_hierachical(
             else:
                 return default
 
-        current = target[key]
+        target = target[key]
 
-    if last in current:
-        return current[last]
+    if last in target:
+        return target[last]
 
     if set_if_not_exists:
-        current[last] = default
+        target[last] = default
 
     return default
+
+
+def get_partial_hierachical(
+    target: dict,
+    vector: tuple
+) -> Any:
+    """Get a property from a nested dict, it will
+    return the first non-dict object
+    """
+
+    for key in vector:
+        if key not in target:
+            return
+
+        target = target[key]
+
+        if type(target) is not dict:
+            return target
 
 
 Symbol = str
