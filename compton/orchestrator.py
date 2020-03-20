@@ -104,6 +104,8 @@ class Orchestrator:
         """Let the consumer subscribe to the changes of the store
         """
 
+        Consumer.check(consumer)
+
         vectors = consumer.vectors
 
         for vector in vectors:
