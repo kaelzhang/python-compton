@@ -31,7 +31,7 @@ class Provider(ABC):
 
     @property
     @abstractmethod
-    def vector(self) -> Vector:
+    def vector(self) -> Vector:  # pragma: no cover
         """A provider should only have one vector
         which means a provider should only handle a single type of message
         """
@@ -42,7 +42,7 @@ class Provider(ABC):
     async def init(
         self,
         symbol: Symbol
-    ) -> Optional[DataFrame]:
+    ) -> Optional[DataFrame]:  # pragma: no cover
         """Initialize the data from the very beginning
         """
 
@@ -51,7 +51,7 @@ class Provider(ABC):
     @abstractmethod
     def when_update(
         dispatch: Callable[[Symbol, Payload], None]
-    ) -> None:
+    ) -> None:  # pragma: no cover
         """Sets the receiver to receive update messages
         """
 

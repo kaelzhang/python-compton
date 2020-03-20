@@ -61,7 +61,8 @@ class Orchestrator:
 
             # We set hierachically for reducers, because
             # we allow reducers to do a semi matching
-            success, context = set_hierachical(saved_reducers, vector, reducer)
+            success, context = set_hierachical(
+                saved_reducers, vector, reducer, False)
 
             if not success:
                 raise ValueError(
@@ -156,7 +157,7 @@ class Orchestrator:
             self._set_store(symbol, vector, new)
 
     def _set_store(self, symbol, vector, payload):
-        set_hierachical(self._store, (symbol, vector), payload)
+        set_hierachical(self._store, (symbol, vector), payload, True)
         self._emit(symbol, vector)
 
     def _emit(self, symbol, vector):

@@ -32,7 +32,7 @@ class Reducer(ABC):
 
     @property
     @abstractmethod
-    def vector(self) -> Vector:
+    def vector(self) -> Vector:  # pragma: no cover
         """The vector of a reducer could be a more generic vector which is much
         shorter.
 
@@ -95,5 +95,5 @@ class Reducer(ABC):
         self,
         target: Payload,
         payload: Payload
-    ) -> Payload:
+    ) -> Payload:  # pragma: no cover
         pass

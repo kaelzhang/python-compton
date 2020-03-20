@@ -107,3 +107,14 @@ async def test_main_with_deferred_init():
 
     await asyncio.sleep(1)
     assert consumer.consumed == [2]
+
+
+def test_reducer_exists():
+    with pytest.raises(
+        ValueError,
+        match='reducer<DataType.KLINE> already exists'
+    ):
+        Orchestrator([
+            SimpleReducer(),
+            SimpleReducer()
+        ])

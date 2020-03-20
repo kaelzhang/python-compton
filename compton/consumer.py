@@ -21,14 +21,14 @@ class Consumer(ABC):
 
     @property
     @abstractmethod
-    def vectors(self) -> List[Vector]:
+    def vectors(self) -> List[Vector]:  # pragma: no cover
         return
 
     def should_process(self, symbol, *args) -> bool:
         return True
 
     @abstractmethod
-    async def process(self, symbol, *args):
+    async def process(self, symbol, *args):  # pragma: no cover
         pass
 
 

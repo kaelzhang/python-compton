@@ -44,21 +44,28 @@ def set_hierachical(
     target: dict,
     vector: tuple,
     value,
+    loose: bool,
     context: list = []
 ):
     """Set the value to a dict hirachically
 
     Args:
         vector (tuple): the length of vector must be larger than 0
+        loose (bool): If `False`, if the target already exists,
+        it will treat it as a failure
     """
 
     first = vector[0]
 
     if len(vector) == 1:
-        # Which means it is the last item of the vector,
-        # we just set the value
-        target[first] = value
-        return True, None
+        # The last item
+        if loose or first not in target:
+            # Which means it is the last item of the vector,
+            # we just set the value
+            target[first] = value
+            return True, None
+        else:
+            return False, [*context, first]
 
     if first in target:
         current = target[first]
