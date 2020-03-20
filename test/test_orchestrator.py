@@ -140,3 +140,25 @@ def test_provider_exists():
         ).connect(
             SimpleProvider()
         )
+
+
+def test_subscribe_provider_not_found():
+    with pytest.raises(
+        KeyError,
+        match='provider<DataType.KLINE,TimeSpan.DAY> must be defined'
+    ):
+        Orchestrator([]).subscribe(
+            SimpleConsumer()
+        )
+
+
+def test_dispatch_reducer_not_found():
+    with pytest.raises(
+        KeyError,
+        match='reducer<DataType.KLINE,TimeSpan.DAY> is not found'
+    ):
+        Orchestrator([]).dispatch(
+            vector,
+            symbol,
+            {}
+        )

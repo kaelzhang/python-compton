@@ -108,7 +108,8 @@ class Orchestrator:
 
         for vector in vectors:
             if vector not in self._providers:
-                raise KeyError(f'a provider{vector} must be defined before subscribing to {vector}')  # noqa:E501
+                vector_str = stringify_vector(vector)
+                raise KeyError(f'a provider{vector_str} must be defined before subscribing to {vector_str}')  # noqa:E501
 
             if vector not in self._subscribed:
                 consumers = []
@@ -138,7 +139,7 @@ class Orchestrator:
 
         if reducer is None:
             raise KeyError(
-                f'can not process dispatched payload, reason: reducer{vector} is not found'  # noqa:E501
+                f'can not process dispatched payload, reason: reducer{stringify_vector(vector)} is not found'  # noqa:E501
             )
 
         store_vector = (symbol, vector)
