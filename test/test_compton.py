@@ -86,25 +86,24 @@ async def test_main():
 
     await asyncio.sleep(1)
 
-    await asyncio.sleep(1)
     assert consumer.consumed == [0, 1, 2]
 
 
-# @pytest.mark.asyncio
-# async def test_main_with_deferred_init():
-#     consumer = SimpleConsumer()
-#     provider = SimpleProvider()
+@pytest.mark.asyncio
+async def test_main_with_deferred_init():
+    consumer = SimpleConsumer()
+    provider = SimpleProvider()
 
-#     Orchestrator(
-#         [SimpleReducer()]
-#     ).connect(
-#         provider
-#     ).subscribe(
-#         consumer
-#     ).add(symbol)
+    Orchestrator(
+        [SimpleReducer()]
+    ).connect(
+        provider
+    ).subscribe(
+        consumer
+    ).add(symbol)
 
-#     await asyncio.sleep(1)
-#     provider.go()
+    await asyncio.sleep(1)
+    provider.go()
 
-#     await asyncio.sleep(1)
-#     assert consumer.consumed == [0, 1, 2]
+    await asyncio.sleep(1)
+    assert consumer.consumed == [2]

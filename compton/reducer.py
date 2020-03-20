@@ -5,7 +5,6 @@ from typing import (
 )
 
 from .common import (
-    get_hierachical,
     stringify_vector,
 
     Vector,
@@ -44,15 +43,21 @@ class Reducer(ABC):
 
     def reduce(
         self,
-        previous: Payload,
-        payload: Payload,
+        init: bool,
+        vector: Vector,
         symbol: Symbol,
-        vector: Vector
+        previous: Payload,
+        payload: Payload
     ) -> Tuple[bool, Optional[Payload]]:
         """Applies the update payload
 
         Args:
             previous (Payload):
+            payload (Payload):
+            symbol (str):
+            vector (tuple):
+            init (bool): If `True`, payload
+            will be treated as the initial value
 
         Returns:
             Tuple[bool, Optional[Payload]]:
@@ -60,29 +65,28 @@ class Reducer(ABC):
             - If no changes, the second item will be `None`
         """
 
-        last = vector[-1]
-        partial_vector = (symbol, vector[:-1])
+        full_vector = (symbol, vector)
 
-        parent = get_hierachical(
-            self._not_updated,
-            partial_vector,
-            {},
-            True
-        )
+        not_updated = self._not_updated.get(full_vector, None)
 
-        not_updated = parent.get(last, None)
+        if init:
+            if not_updated:
+                del self._not_updated[full_vector]
+                return True, self.merge(
+                    payload,
+                    not_updated
+                )
+
+            return True, payload
 
         if not previous:
             # If not initialized
-            parent[last] = self.merge(
+            self._not_updated[full_vector] = self.merge(
                 not_updated,
                 payload
             ) if not_updated else payload
 
             return False, None
-
-        if not_updated:
-            payload = self.merge(not_updated, payload)
 
         return True, self.merge(previous, payload)
 

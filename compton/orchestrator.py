@@ -41,7 +41,8 @@ class Orchestrator:
 
     def __init__(
         self,
-        reducers: List[Reducer]
+        reducers: List[Reducer],
+        init_dispatch: bool = False
     ):
         self._store = {}
         self._providers = {}
@@ -126,16 +127,20 @@ class Orchestrator:
 
         return self
 
-    def dispatch(
-        self,
-        vector: Vector,
-        symbol: Symbol,
-        payload: Payload
-    ):
+    def dispatch(self, *args):
         """Dispatch updates to a certain vector.
         This method is mainly used for testing purpose
         """
 
+        return self._dispatch(False, *args)
+
+    def _dispatch(
+        self,
+        init: bool,
+        vector: Vector,
+        symbol: Symbol,
+        payload: Payload
+    ):
         reducer = get_partial_hierachical(self._reducers, vector)
 
         if reducer is None:
@@ -145,7 +150,7 @@ class Orchestrator:
 
         store_vector = (symbol, vector)
         previous = get_hierachical(self._store, store_vector)
-        changed, new = reducer.reduce(previous, payload, symbol, vector)
+        changed, new = reducer.reduce(init, vector, symbol, previous, payload)
 
         if changed:
             self._set_store(symbol, vector, new)
@@ -214,4 +219,4 @@ class Orchestrator:
 
             logger.error('give up init symbol "%s"', symbol)
 
-        self._set_store(symbol, provider.vector, payload)
+        self._dispatch(True, provider.vector, symbol, payload)
