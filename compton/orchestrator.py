@@ -15,9 +15,6 @@ from .reducer import Reducer
 
 from .common import (
     match_vector,
-    get_vector,
-    check_vector,
-    is_hashable,
     stringify_vector,
     set_hierachical,
     get_hierachical,
@@ -57,7 +54,7 @@ class Orchestrator:
         for reducer in reducers:
             Reducer.check(reducer)
 
-            vector = get_vector(reducer)
+            vector = reducer.vector
 
             # We set hierachically for reducers, because
             # we allow reducers to do a semi matching
@@ -78,7 +75,7 @@ class Orchestrator:
 
         Provider.check(provider)
 
-        vector = get_vector(provider)
+        vector = provider.vector
         reducer = get_partial_hierachical(self._reducers, vector)
 
         if reducer is None:
@@ -93,7 +90,7 @@ class Orchestrator:
                 vector, provider_vector
             ):
                 raise KeyError(
-                    f'a provider{stringify_vector(provider_vector)} exists'
+                    f'provider{stringify_vector(provider_vector)} exists'
                 )
 
         self._providers[vector] = provider
@@ -110,11 +107,6 @@ class Orchestrator:
         vectors = consumer.vectors
 
         for vector in vectors:
-            check_vector(vector)
-
-            if not is_hashable(vector):
-                raise ValueError(f'{vector} is not hashable')
-
             if vector not in self._providers:
                 raise KeyError(f'a provider{vector} must be defined before subscribing to {vector}')  # noqa:E501
 

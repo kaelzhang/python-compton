@@ -6,6 +6,9 @@ from typing import (
 )
 
 from .common import (
+    check_vector,
+    stringify_vector,
+
     Payload,
     Vector
 )
@@ -18,6 +21,20 @@ class Consumer(ABC):
             raise ValueError(
                 f'consumer must be an instance of Consumer, but got `{consumer}`'  # noqa: E501
             )
+
+        for vector in consumer.vectors:
+            check_vector(vector, consumer)
+
+    def __str__(self):
+        try:
+            vectors = stringify_vector([
+                stringify_vector(vector)
+                for vector in self.vectors
+            ])
+        except Exception:
+            return 'consumer<invalid>'
+
+        return f'consumer{vectors}'
 
     @property
     @abstractmethod

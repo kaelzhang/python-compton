@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from functools import partialmethod
 from typing import (
     Callable,
     Optional
@@ -7,7 +8,8 @@ from typing import (
 from pandas import DataFrame
 
 from .common import (
-    stringify_vector,
+    stringify,
+    check_vector,
 
     Vector,
     Symbol,
@@ -19,6 +21,8 @@ class Provider(ABC):
     """
     """
 
+    __str__ = partialmethod(stringify, 'provider')
+
     @staticmethod
     def check(provider):
         if not isinstance(provider, Provider):
@@ -26,8 +30,7 @@ class Provider(ABC):
                 f'provider must be an instance of Provider, but got `{provider}`'  # noqa: E501
             )
 
-    def __str__(self):
-        return f'provider{stringify_vector(self.vector)}'
+        check_vector(provider.vector, provider)
 
     @property
     @abstractmethod

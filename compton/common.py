@@ -136,6 +136,15 @@ def stringify_vector(list_like):
     return f'<{VECTOR_SEPARATOR.join([str(x) for x in list_like])}>'
 
 
+def stringify(self, name):
+    try:
+        vector_str = stringify_vector(self.vector)
+    except Exception:
+        return f'{name}<invalid>'
+
+    return name + vector_str
+
+
 def is_hashable(subject: Any) -> bool:
     try:
         hash(subject)
@@ -144,21 +153,14 @@ def is_hashable(subject: Any) -> bool:
         return False
 
 
-def check_vector(vector):
+def check_vector(vector, target):
     if not isinstance(vector, tuple):
         raise ValueError(
-            f'vector must be a tuple, but got `{vector}`'
+            f'vector of {target} must be a tuple, but got `{vector}`'
         )
 
-
-def get_vector(target):
-    vector = target.vector
-    check_vector(vector)
-
     if not is_hashable(vector):
-        raise ValueError(f'{target}.vector is not hashable')
-
-    return vector
+        raise ValueError(f'vector `{vector}` of {target} is not hashable')
 
 
 class DataType(Enum):

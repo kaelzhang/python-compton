@@ -1,11 +1,13 @@
 from abc import ABC, abstractmethod
+from functools import partialmethod
 from typing import (
     Optional,
     Tuple,
 )
 
 from .common import (
-    stringify_vector,
+    stringify,
+    check_vector,
 
     Vector,
     Symbol,
@@ -17,6 +19,8 @@ class Reducer(ABC):
     """
     """
 
+    __str__ = partialmethod(stringify, 'reducer')
+
     @staticmethod
     def check(reducer):
         if not isinstance(reducer, Reducer):
@@ -24,11 +28,10 @@ class Reducer(ABC):
                 f'reducer must be an instance of Reducer, but got `{reducer}`'  # noqa: E501
             )
 
+        check_vector(reducer.vector, reducer)
+
     def __init__(self):
         self._not_updated = {}
-
-    def __str__(self):
-        return f'reducer{stringify_vector(self.vector)}'
 
     @property
     @abstractmethod

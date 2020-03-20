@@ -8,7 +8,7 @@ lint:
 	flake8 compton test *.py
 
 fix:
-	autopep8 --in-place --aggressive -r compton test *.py
+	autopep8 --in-place -r compton test *.py
 
 report:
 	codecov
