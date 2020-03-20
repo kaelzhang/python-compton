@@ -10,13 +10,16 @@ from .types import (
     SimpleReducer,
     SimpleConsumer,
     symbol,
-    vector
+    vector,
+
+    DataType
 )
 
 
 @pytest.mark.asyncio
 async def test_main():
     consumer = SimpleConsumer()
+    consumer2 = SimpleConsumer()
     provider = SimpleProvider().go()
 
     Orchestrator(
@@ -25,11 +28,35 @@ async def test_main():
         provider
     ).subscribe(
         consumer
+    ).subscribe(
+        consumer2
     ).add(symbol)
 
     await asyncio.sleep(1)
 
     assert consumer.consumed == [0, 1, 2]
+    assert consumer2.consumed == [0, 1, 2]
+
+
+@pytest.mark.asyncio
+async def test_main_with_no_subscription():
+    consumer = SimpleConsumer()
+    provider = SimpleProvider()
+
+    o = Orchestrator(
+        [SimpleReducer()]
+    ).connect(
+        provider
+    ).add(symbol)
+
+    await asyncio.sleep(1)
+    provider.go()
+
+    await asyncio.sleep(1)
+
+    o.subscribe(consumer)
+
+    assert not consumer.consumed
 
 
 @pytest.mark.asyncio
@@ -72,6 +99,11 @@ def test_connect_reducer_not_found():
 
 
 def test_provider_exists():
+    class MoreGenericProvider(SimpleProvider):
+        @property
+        def vector(self):
+            return (DataType.KLINE,)
+
     with pytest.raises(
         KeyError,
         match='provider<DataType.KLINE,TimeSpan.DAY> exists'
@@ -82,6 +114,30 @@ def test_provider_exists():
             SimpleProvider()
         ).connect(
             SimpleProvider()
+        )
+
+    with pytest.raises(
+        KeyError,
+        match='provider<DataType.KLINE> exists'
+    ):
+        Orchestrator([
+            SimpleReducer()
+        ]).connect(
+            MoreGenericProvider()
+        ).connect(
+            SimpleProvider()
+        )
+
+    with pytest.raises(
+        KeyError,
+        match='provider<DataType.KLINE,TimeSpan.DAY> exists'
+    ):
+        Orchestrator([
+            SimpleReducer()
+        ]).connect(
+            SimpleProvider()
+        ).connect(
+            MoreGenericProvider()
         )
 
 

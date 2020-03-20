@@ -2,10 +2,19 @@ import asyncio
 from compton import (
     Provider,
     Reducer,
-    Consumer,
-    DataType,
-    TimeSpan
+    Consumer
 )
+
+
+from enum import Enum
+
+
+class DataType(Enum):
+    KLINE = 1
+
+
+class TimeSpan(Enum):
+    DAY = 1
 
 
 symbol = 'US.TSLA'

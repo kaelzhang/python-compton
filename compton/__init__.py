@@ -4,6 +4,6 @@ from .reducer import Reducer
 from .consumer import Consumer
 from .common import (
     Vector,
-    DataType,
-    TimeSpan
+    Symbol,
+    Payload
 )

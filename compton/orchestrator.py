@@ -186,6 +186,7 @@ class Orchestrator:
         """
 
         start_background_task(self._start_providers(symbol), logger)
+        return self
 
     async def _start_providers(self, symbol: Symbol):
         tasks = []

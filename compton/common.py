@@ -3,8 +3,6 @@ from typing import (
     Any
 )
 
-from enum import Enum
-
 
 async def background_task(coroutine, logger):
     try:
@@ -161,11 +159,3 @@ def check_vector(vector, target):
 
     if not is_hashable(vector):
         raise ValueError(f'vector `{vector}` of {target} is not hashable')
-
-
-class DataType(Enum):
-    KLINE = 1
-
-
-class TimeSpan(Enum):
-    DAY = 1
