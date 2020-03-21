@@ -15,16 +15,19 @@ class DataType(Enum):
 
 class TimeSpan(Enum):
     DAY = 1
+    WEEK = 2
 
 
 symbol = 'US.TSLA'
 
 vector = (DataType.KLINE, TimeSpan.DAY)
+vector2 = (DataType.KLINE, TimeSpan.WEEK)
 
 
 class SimpleProvider(Provider):
-    def __init__(self):
+    def __init__(self, i=0):
         self._future = asyncio.Future()
+        self._i = i
 
     @property
     def vector(self):
@@ -43,11 +46,20 @@ class SimpleProvider(Provider):
 
         while i < 3:
             await asyncio.sleep(.05)
-            dispatch(symbol, dict(i=i))
+            dispatch(symbol, dict(i=i + self._i))
             i += 1
 
     def when_update(self, dispatch):
         asyncio.create_task(self._update(dispatch))
+
+
+class SimpleProvider2(SimpleProvider):
+    def __init__(self):
+        super().__init__(1)
+
+    @property
+    def vector(self):
+        return vector2
 
 
 class SimpleReducer(Reducer):
@@ -75,3 +87,18 @@ class SimpleConsumer(Consumer):
 
     async def process(self, symbol, payload):
         self.consumed.append(payload['i'])
+
+
+class SimpleConsumer2(Consumer):
+    def __init__(self):
+        self.consumed = []
+
+    @property
+    def vectors(self):
+        return [vector, vector2]
+
+    def should_process(self, symbol, payload, payload2):
+        return payload['i'] == payload2['i']
+
+    async def process(self, symbol, payload, payload2):
+        self.consumed.append((payload['i'], payload2['i']))

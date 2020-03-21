@@ -7,8 +7,10 @@ from compton import (
 
 from .types import (
     SimpleProvider,
+    SimpleProvider2,
     SimpleReducer,
     SimpleConsumer,
+    SimpleConsumer2,
     symbol,
     vector,
 
@@ -18,24 +20,27 @@ from .types import (
 
 @pytest.mark.asyncio
 async def test_main():
-    consumer = SimpleConsumer()
-    consumer2 = SimpleConsumer()
+    # consumer = SimpleConsumer()
+    consumer2 = SimpleConsumer2()
     provider = SimpleProvider().go()
+    provider2 = SimpleProvider2().go()
 
     Orchestrator(
         [SimpleReducer()]
     ).connect(
         provider
-    ).subscribe(
-        consumer
+    ).connect(
+        provider2
     ).subscribe(
         consumer2
     ).add(symbol)
 
     await asyncio.sleep(1)
 
-    assert consumer.consumed == [0, 1, 2]
-    assert consumer2.consumed == [0, 1, 2]
+    # assert consumer.consumed == [0, 1, 2]
+    assert consumer2.consumed == [
+        (0, 0), (2, 2)
+    ]
 
 
 @pytest.mark.asyncio

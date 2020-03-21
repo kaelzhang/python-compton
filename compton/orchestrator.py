@@ -107,6 +107,7 @@ class Orchestrator:
         Consumer.check(consumer)
 
         vectors = consumer.vectors
+        sentinel = ConsumerSentinel(consumer)
 
         for vector in vectors:
             if vector not in self._providers:
@@ -119,7 +120,7 @@ class Orchestrator:
             else:
                 consumers = self._subscribed[vector]
 
-            consumers.append(ConsumerSentinel(consumer))
+            consumers.append(sentinel)
 
         return self
 
