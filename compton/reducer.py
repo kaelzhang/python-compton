@@ -80,7 +80,7 @@ class Reducer(ABC):
                     not_updated
                 )
 
-            return True, payload
+            return True, self.merge(None, payload)
 
         if not previous:
             # If not initialized

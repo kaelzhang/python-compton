@@ -79,6 +79,9 @@ class SimpleReducer(Reducer):
         return (DataType.KLINE,)
 
     def merge(self, old, new):
+        if old is None:
+            return new
+
         merged = {
             **old,
             **new

@@ -107,6 +107,11 @@ class MyReducer(Reducer):
         return (DataType.KLINE,)
 
     def merge(self, old, new):
+        # `old` might be `None`, if `new` is the initial data
+        if old is None:
+            # We could clean the initial data
+            return clean(new)
+
         return {**old, **new}
 ```
 
