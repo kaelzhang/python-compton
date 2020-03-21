@@ -102,3 +102,8 @@ class SimpleConsumer2(Consumer):
 
     async def process(self, symbol, payload, payload2):
         self.consumed.append((payload['i'], payload2['i']))
+
+
+class SimpleConsumer3(SimpleConsumer):
+    async def process(self, symbol, payload):
+        raise RuntimeError('you got me')

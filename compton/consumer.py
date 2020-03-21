@@ -95,6 +95,11 @@ class ConsumerSentinel:
         try:
             await self._consumer.process(symbol, *payloads)
         except Exception as e:
-            logger.error('consumer process error: %s', e)
+            # print('>>>>>>', e)
+            try:
+                logger.error('consumer process error: %s', e)
+            except Exception as ee:
+                print('logger >>>>>>>>', ee)
+
 
         self._processing = False

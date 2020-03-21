@@ -1,4 +1,5 @@
 test:
+	# pytest --capture=sys -v test/test_*.py --doctest-modules --cov compton --cov-config=.coveragerc --cov-report term-missing
 	pytest -s -v test/test_*.py --doctest-modules --cov compton --cov-config=.coveragerc --cov-report term-missing
 
 install:

@@ -20,7 +20,7 @@ from .types import (
 
 @pytest.mark.asyncio
 async def test_main():
-    # consumer = SimpleConsumer()
+    consumer = SimpleConsumer()
     consumer2 = SimpleConsumer2()
     provider = SimpleProvider().go()
     provider2 = SimpleProvider2().go()
@@ -32,12 +32,14 @@ async def test_main():
     ).connect(
         provider2
     ).subscribe(
+        consumer
+    ).subscribe(
         consumer2
     ).add(symbol)
 
     await asyncio.sleep(1)
 
-    # assert consumer.consumed == [0, 1, 2]
+    assert consumer.consumed == [0, 1, 2]
     assert consumer2.consumed == [
         (0, 0), (2, 2)
     ]
