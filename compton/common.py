@@ -158,4 +158,4 @@ def check_vector(vector, target):
         )
 
     if not is_hashable(vector):
-        raise ValueError(f'vector `{vector}` of {target} is not hashable')
+        raise ValueError(f'vector of {target} is not hashable')

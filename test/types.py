@@ -62,6 +62,16 @@ class SimpleProvider2(SimpleProvider):
         return vector2
 
 
+class SimpleProvider3(SimpleProvider):
+    async def init(self, symbol):
+        raise RuntimeError('you got me')
+
+
+class SimpleProvider4(SimpleProvider):
+    def when_update(self, dispatch):
+        raise RuntimeError('you got me')
+
+
 class SimpleReducer(Reducer):
     @property
     def vector(self):
@@ -75,6 +85,12 @@ class SimpleReducer(Reducer):
         }
 
         return merged
+
+
+class SimpleReducer2(SimpleReducer):
+    @property
+    def vector(self):
+        return (DataType.KLINE, TimeSpan.DAY)
 
 
 class SimpleConsumer(Consumer):

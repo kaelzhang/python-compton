@@ -213,8 +213,13 @@ class Orchestrator:
             logger.error('init for symbol "%s" failed: %s', symbol, e)
 
             if retries < self.MAX_INIT_RETRIES:
-                return self._start_provider(symbol, provider, retries + 1)
+                return await self._start_provider(
+                    symbol,
+                    provider,
+                    retries + 1
+                )
 
             logger.error('give up init symbol "%s"', symbol)
+            return
 
         self._dispatch(True, provider.vector, symbol, payload)

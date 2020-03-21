@@ -9,6 +9,7 @@ from .types import (
     SimpleProvider,
     SimpleProvider2,
     SimpleReducer,
+    SimpleReducer2,
     SimpleConsumer,
     SimpleConsumer2,
     symbol,
@@ -94,6 +95,17 @@ def test_reducer_exists():
         Orchestrator([
             SimpleReducer(),
             SimpleReducer()
+        ])
+
+
+def test_reducer_another_generic_exists():
+    with pytest.raises(
+        ValueError,
+        match='reducer<DataType.KLINE> already exists'
+    ):
+        Orchestrator([
+            SimpleReducer(),
+            SimpleReducer2()
         ])
 
 
