@@ -14,15 +14,17 @@ def read(fname):
 
 
 settings = dict(
-    name='compton-futu',
-    packages=['compton_futu'],
+    name='compton',
+    packages=[
+        'compton'
+    ],
     version=__version__,
-    author='kaelzhang',
-    author_email='',
-    description=('Futu quant'),
+    author='Kael Zhang',
+    author_email='i+pypi@kael.me',
+    description=('An abstract data flow framework for quantitative trading'),
     license='MIT',
-    keywords='compton-futu',
-    url='https://github.com/kaelzhang/compton-futu',
+    keywords='compton dataflow quant quantitative trading stock',
+    url='https://github.com/kaelzhang/python-compton',
     long_description=read('README.md'),
     long_description_content_type='text/markdown',
     python_requires='>=3.7',

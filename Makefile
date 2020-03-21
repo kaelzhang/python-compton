@@ -1,15 +1,16 @@
+files = compton test
+
 test:
-	# pytest --capture=sys -v test/test_*.py --doctest-modules --cov compton --cov-config=.coveragerc --cov-report term-missing
 	pytest -s -v test/test_*.py --doctest-modules --cov compton --cov-config=.coveragerc --cov-report term-missing
 
 install:
-	pip install -r requirements.txt -r test-requirements.txt
+	pip install -r test-requirements.txt
 
 lint:
-	flake8 compton test *.py
+	flake8 $(files)
 
 fix:
-	autopep8 --in-place -r compton test *.py
+	autopep8 --in-place -r $(files)
 
 report:
 	codecov
@@ -18,14 +19,8 @@ build: compton
 	rm -rf dist
 	python setup.py sdist bdist_wheel
 
-start:
-	python start.py
-
-dev:
-	SERVER_PORT=8081 python start.py
-
-# publish:
-# 	make build
-# 	twine upload --config-file ~/.pypirc -r pypi dist/*
+publish:
+	make build
+	twine upload --config-file ~/.pypirc -r pypi dist/*
 
 .PHONY: test
