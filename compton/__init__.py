@@ -7,3 +7,6 @@ from .common import (
     Symbol,
     Payload
 )
+
+
+__version__ = '1.0.0'

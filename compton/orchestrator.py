@@ -38,8 +38,7 @@ class Orchestrator:
 
     def __init__(
         self,
-        reducers: List[Reducer],
-        init_dispatch: bool = False
+        reducers: List[Reducer]
     ):
         self._store = {}
         self._providers = {}

@@ -5,8 +5,6 @@ from typing import (
     Optional
 )
 
-from pandas import DataFrame
-
 from .common import (
     stringify,
     check_vector,
@@ -45,7 +43,7 @@ class Provider(ABC):
     async def init(
         self,
         symbol: Symbol
-    ) -> Optional[DataFrame]:  # pragma: no cover
+    ) -> Optional[object]:  # pragma: no cover
         """Initialize the data from the very beginning
         """
 
