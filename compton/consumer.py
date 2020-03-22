@@ -41,6 +41,14 @@ class Consumer(ABC):
     def vectors(self) -> List[Vector]:  # pragma: no cover
         return
 
+    @property
+    def all(self):
+        return False
+
+    @property
+    def concurrency(self):
+        return 0
+
     def should_process(self, symbol, *args) -> bool:
         return True
 
@@ -61,33 +69,48 @@ class ConsumerSentinel:
 
         self._consumer = consumer
         self._vectors = set(consumer.vectors)
+        self._need_all_changes = bool(consumer.all)
 
         self._changed = {}
-        self._processing = False
+        self._processing = 0
+
+        concurrency = consumer.concurrency
+
+        self._max_processing = int(concurrency) if concurrency else 0
 
     @property
     def vectors(self):
         return self._consumer.vectors
 
     def satisfy(self, symbol, vector) -> bool:
-        if symbol in self._changed:
-            changed = self._changed[symbol]
-        else:
-            changed = set()
-            self._changed[symbol] = changed
+        if self._need_all_changes:
+            # If the consumer requires change for every vector
 
-        changed.add(vector)
+            if symbol in self._changed:
+                changed = self._changed[symbol]
+            else:
+                changed = set()
+                self._changed[symbol] = changed
 
-        # For do not allow simultaneously processing
-        return changed == self._vectors and not self._processing
+            changed.add(vector)
+
+            if changed != self._vectors:
+                return False
+
+        # No concurrency limit
+        # Or does not reach the limit
+        return self._max_processing == 0 \
+            or self._processing < self._max_processing
 
     def process(self, symbol, payloads: List[Payload]):
         if not self._consumer.should_process(symbol, *payloads):
             return
 
-        # Only if we start to process, then we clear changed
-        self._changed[symbol].clear()
-        self._processing = True
+        if self._need_all_changes:
+            # Only if we start to process, then we clear changed
+            self._changed[symbol].clear()
+
+        self._processing += 1
 
         asyncio.create_task(self._process(symbol, payloads))
 
@@ -97,4 +120,4 @@ class ConsumerSentinel:
         except Exception as e:
             logger.error('consumer process error: %s', e)
 
-        self._processing = False
+        self._processing -= 1

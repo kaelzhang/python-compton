@@ -116,11 +116,32 @@ class SimpleConsumer2(Consumer):
     def vectors(self):
         return [vector, vector2]
 
+    @property
+    def concurrency(self):
+        return 1
+
+    @property
+    def all(self):
+        return True
+
     def should_process(self, symbol, payload, payload2):
         return payload['i'] == payload2['i']
 
     async def process(self, symbol, payload, payload2):
         self.consumed.append((payload['i'], payload2['i']))
+
+
+class SimpleConsumer4(SimpleConsumer2):
+    @property
+    def all(self):
+        return False
+
+    @property
+    def concurrency(self):
+        return 0
+
+    def should_process(self, *args):
+        return True
 
 
 class SimpleConsumer3(SimpleConsumer):

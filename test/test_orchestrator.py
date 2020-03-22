@@ -12,6 +12,7 @@ from .types import (
     SimpleReducer2,
     SimpleConsumer,
     SimpleConsumer2,
+    SimpleConsumer4,
     symbol,
     vector,
 
@@ -44,6 +45,27 @@ async def test_main():
     assert consumer2.consumed == [
         (0, 0), (2, 2)
     ]
+
+
+@pytest.mark.asyncio
+async def test_no_concurrent_limit():
+    consumer = SimpleConsumer4()
+    provider = SimpleProvider().go()
+    provider2 = SimpleProvider2().go()
+
+    Orchestrator(
+        [SimpleReducer()]
+    ).connect(
+        provider
+    ).connect(
+        provider2
+    ).subscribe(
+        consumer
+    ).add(symbol)
+
+    await asyncio.sleep(1)
+
+    assert len(consumer.consumed) == 5
 
 
 @pytest.mark.asyncio

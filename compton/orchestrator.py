@@ -163,6 +163,7 @@ class Orchestrator:
 
         for consumer_sentinel in subscribed:
             satisfied = consumer_sentinel.satisfy(symbol, vector)
+
             if not satisfied:
                 continue
 

@@ -129,6 +129,21 @@ class MyConsumer(Consumer):
             (DataType.KLINE, TimeSpan.WEEK)
         ]
 
+    @property
+    def all(self):
+        # `True` indicates that the consumer will only go processing
+        # if both of the data corresponds with the two vectors have changes
+
+        # And by default, `Consumer::all` is False
+        return True
+
+    @property
+    def concurrency(self):
+        # concurrency limit for method `process()`
+
+        # By default, `Consumer::concurrency` is `0` which means no limit
+        return 1
+
     # Then there will be
     # both `kline_day` and `kline_week` passed into method `process`
     async def process(self, symbol, kline_day, kline_week):
