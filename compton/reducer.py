@@ -73,7 +73,8 @@ class Reducer(ABC):
         not_updated = self._not_updated.get(full_vector, None)
 
         if init:
-            if not_updated:
+            # Usually, the truth value of a StockDataFrame is ambiguous
+            if not_updated is not None:
                 del self._not_updated[full_vector]
                 return True, self.merge(
                     payload,
@@ -82,7 +83,7 @@ class Reducer(ABC):
 
             return True, self.merge(None, payload)
 
-        if not previous:
+        if previous is None:
             # If not initialized
             self._not_updated[full_vector] = self.merge(
                 not_updated,
