@@ -1,4 +1,3 @@
-import asyncio
 import logging
 from abc import ABC, abstractmethod
 from typing import (
@@ -102,7 +101,7 @@ class ConsumerSentinel:
         return self._max_processing == 0 \
             or self._processing < self._max_processing
 
-    def process(self, symbol, payloads: List[Payload]):
+    def process(self, symbol, payloads: List[Payload], loop):
         if not self._consumer.should_process(symbol, *payloads):
             return
 
@@ -112,7 +111,7 @@ class ConsumerSentinel:
 
         self._processing += 1
 
-        asyncio.create_task(self._process(symbol, payloads))
+        loop.create_task(self._process(symbol, payloads))
 
     async def _process(self, symbol, payloads):
         try:

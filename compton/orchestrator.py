@@ -38,7 +38,8 @@ class Orchestrator:
 
     def __init__(
         self,
-        reducers: List[Reducer]
+        reducers: List[Reducer],
+        loop=None
     ):
         self._store = {}
         self._providers = {}
@@ -46,6 +47,19 @@ class Orchestrator:
         self._reducers = {}
 
         self._apply_reducers(reducers)
+        self.__loop = loop
+
+    @property
+    def _loop(self):
+        """Lazy initialize the _loop property
+        """
+
+        if self.__loop is not None:
+            return self.__loop
+
+        loop = asyncio.get_event_loop()
+        self.__loop = loop
+        return loop
 
     def _apply_reducers(self, reducers):
         saved_reducers = self._reducers
@@ -172,7 +186,8 @@ class Orchestrator:
                 self._get_payloads_by_vectors(
                     symbol,
                     consumer_sentinel.vectors
-                )
+                ),
+                self._loop
             )
 
     def _get_payloads_by_vectors(self, symbol, vectors):
@@ -186,7 +201,11 @@ class Orchestrator:
         """Adds a new stock symbol to the orchestrator
         """
 
-        start_background_task(self._start_providers(symbol), logger)
+        start_background_task(
+            self._start_providers(symbol),
+            logger,
+            self._loop
+        )
         return self
 
     async def _start_providers(self, symbol: Symbol):
@@ -196,7 +215,10 @@ class Orchestrator:
             dispatch = partial(self.dispatch, vector)
             provider.when_update(dispatch)
 
-            task = asyncio.create_task(self._start_provider(symbol, provider))
+            task = self._loop.create_task(
+                self._start_provider(symbol, provider)
+            )
+
             tasks.append(task)
 
         await asyncio.wait(tasks)

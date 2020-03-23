@@ -1,4 +1,3 @@
-import asyncio
 from typing import (
     Any
 )
@@ -11,8 +10,8 @@ async def background_task(coroutine, logger):
         logger.error('background task error: %s', e)
 
 
-def start_background_task(coroutine, logger):
-    asyncio.create_task(
+def start_background_task(coroutine, logger, loop):
+    loop.create_task(
         background_task(coroutine, logger)
     )
 

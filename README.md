@@ -52,9 +52,25 @@ class TimeSpan(Enum):
 vector = (DataType.KLINE, TimeSpan.DAY)
 ```
 
-## Orchestrator(reducers)
+## Orchestrator(reducers, loop=None)
 
 - **reducers** `List[Reducer]` reducers to compose data
+- **loop** `EventLoop` The event loop object to use
+
+The following code shows how to use compton in a non-coroutine environmennt
+
+```py
+loop = asyncio.new_event_loop()
+
+orchestrator = Orchestrator(
+    Reducers,
+    loop
+)
+
+orchestrator.add('US.TSLA')
+
+loop.run_forever()
+```
 
 ### orchestrator.connect(provider: Provider) -> self
 

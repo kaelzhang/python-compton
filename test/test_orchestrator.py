@@ -68,6 +68,37 @@ async def test_no_concurrent_limit():
     assert len(consumer.consumed) == 5
 
 
+def test_no_concurrent_limit_and_outside_event_lop():
+    loop = asyncio.new_event_loop()
+
+    consumer = SimpleConsumer4()
+    provider = SimpleProvider().go()
+    provider2 = SimpleProvider2().go()
+
+    orchestrator = Orchestrator(
+        [SimpleReducer()],
+        loop
+    ).connect(
+        provider
+    ).connect(
+        provider2
+    ).subscribe(
+        consumer
+    )
+
+    orchestrator.add(symbol)
+
+    async def stop():
+        await asyncio.sleep(1)
+
+    loop.run_until_complete(stop())
+    loop.stop()
+
+    assert len(consumer.consumed) == 5
+    loop.run_forever()
+    loop.close()
+
+
 @pytest.mark.asyncio
 async def test_main_with_no_subscription():
     consumer = SimpleConsumer()
