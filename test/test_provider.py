@@ -31,6 +31,9 @@ def test_str():
         def init():
             pass
 
+        def remove():
+            pass
+
         def when_update():
             pass
 
@@ -52,6 +55,9 @@ def test_str():
         def init():
             pass
 
+        def remove():
+            pass
+
         def when_update():
             pass
 
@@ -65,6 +71,9 @@ def test_vector_not_hashable():
             return ({},)
 
         def init():
+            pass
+
+        def remove():
             pass
 
         def when_update():

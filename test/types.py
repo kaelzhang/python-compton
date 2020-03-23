@@ -25,9 +25,12 @@ vector2 = (DataType.KLINE, TimeSpan.WEEK)
 
 
 class SimpleProvider(Provider):
+    MAX = 3
+
     def __init__(self, i=0):
         self._future = asyncio.Future()
         self._i = i
+        self._discarded = set()
 
     @property
     def vector(self):
@@ -37,6 +40,10 @@ class SimpleProvider(Provider):
         await self._future
         return dict(i=0)
 
+    def remove(self, symbol):
+        self._discarded.add(symbol)
+        return
+
     def go(self):
         self._future.set_result(None)
         return self
@@ -44,7 +51,7 @@ class SimpleProvider(Provider):
     async def _update(self, dispatch):
         i = 1
 
-        while i < 3:
+        while i < self.MAX and symbol not in self._discarded:
             await asyncio.sleep(.05)
             dispatch(symbol, dict(i=i + self._i))
             i += 1
@@ -70,6 +77,10 @@ class SimpleProvider3(SimpleProvider):
 class SimpleProvider4(SimpleProvider):
     def when_update(self, dispatch):
         raise RuntimeError('you got me')
+
+
+class SimpleProvider5(SimpleProvider):
+    MAX = float('inf')
 
 
 class SimpleReducer(Reducer):

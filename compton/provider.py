@@ -44,7 +44,17 @@ class Provider(ABC):
         self,
         symbol: Symbol
     ) -> Optional[object]:  # pragma: no cover
-        """Initialize the data from the very beginning
+        """Initialize the data for symbol `symbol` from the very beginning
+        """
+
+        return
+
+    @abstractmethod
+    def remove(
+        self,
+        symbol: Symbol
+    ) -> None:  # pragma: no cover
+        """Discard the symbol, and do not receive further updates
         """
 
         return

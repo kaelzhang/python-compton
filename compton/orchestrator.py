@@ -46,8 +46,14 @@ class Orchestrator:
         self._subscribed = {}
         self._reducers = {}
 
+        self._added = set()
+
         self._apply_reducers(reducers)
         self.__loop = loop
+
+    @property
+    def added(self) -> frozenset:
+        return frozenset(self._added)
 
     @property
     def _loop(self):
@@ -82,7 +88,7 @@ class Orchestrator:
     def connect(
         self,
         provider: Provider
-    ) -> None:
+    ) -> 'Orchestrator':
         """Connect to a provider
         """
 
@@ -113,7 +119,7 @@ class Orchestrator:
     def subscribe(
         self,
         consumer: Consumer
-    ) -> None:
+    ) -> 'Orchestrator':
         """Let the consumer subscribe to the changes of the store
         """
 
@@ -137,12 +143,12 @@ class Orchestrator:
 
         return self
 
-    def dispatch(self, *args):
+    def dispatch(self, *args) -> None:
         """Dispatch updates to a certain vector.
         This method is mainly used for testing purpose
         """
 
-        return self._dispatch(False, *args)
+        self._dispatch(False, *args)
 
     def _dispatch(
         self,
@@ -197,15 +203,34 @@ class Orchestrator:
     def add(
         self,
         symbol: Symbol
-    ) -> bool:
+    ) -> 'Orchestrator':
         """Adds a new stock symbol to the orchestrator
         """
 
-        start_background_task(
-            self._start_providers(symbol),
-            logger,
-            self._loop
-        )
+        if symbol not in self._added:
+            self._added.add(symbol)
+
+            start_background_task(
+                self._start_providers(symbol),
+                logger,
+                self._loop
+            )
+
+        return self
+
+    def remove(
+        self,
+        symbol: Symbol
+    ) -> 'Orchestrator':
+        """Removes a symbol
+        """
+
+        if symbol in self._added:
+            self._added.remove(symbol)
+
+            for provider in self._providers.values():
+                provider.discard(symbol)
+
         return self
 
     async def _start_providers(self, symbol: Symbol):

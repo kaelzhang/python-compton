@@ -8,6 +8,7 @@ from compton import (
 from .types import (
     SimpleProvider,
     SimpleProvider2,
+    SimpleProvider5,
     SimpleReducer,
     SimpleReducer2,
     SimpleConsumer,
@@ -86,7 +87,7 @@ def test_no_concurrent_limit_and_outside_event_lop():
         consumer
     )
 
-    orchestrator.add(symbol)
+    orchestrator.add(symbol).add(symbol)
 
     async def stop():
         await asyncio.sleep(1)
@@ -95,6 +96,11 @@ def test_no_concurrent_limit_and_outside_event_lop():
     loop.stop()
 
     assert len(consumer.consumed) == 5
+    assert list(orchestrator.added) == [symbol]
+
+    orchestrator.remove(symbol).remove(symbol)
+    assert not orchestrator.added
+
     loop.run_forever()
     loop.close()
 
@@ -118,6 +124,25 @@ async def test_main_with_no_subscription():
     o.subscribe(consumer)
 
     assert not consumer.consumed
+
+
+@pytest.mark.asyncio
+async def test_main_remove():
+    consumer = SimpleConsumer()
+    provider = SimpleProvider5().go()
+
+    o = Orchestrator(
+        [SimpleReducer()]
+    ).connect(
+        provider
+    ).subscribe(consumer).add(symbol)
+
+    o.remove(symbol)
+    await asyncio.sleep(.5)
+    consumed = list(consumer.consumed)
+    await asyncio.sleep(.5)
+
+    assert consumer.consumed == consumed
 
 
 @pytest.mark.asyncio
