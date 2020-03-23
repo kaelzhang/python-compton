@@ -172,8 +172,9 @@ class Orchestrator:
             self._set_store(symbol, vector, new)
 
     def _set_store(self, symbol, vector, payload):
-        set_hierachical(self._store, (symbol, vector), payload, True)
-        self._emit(symbol, vector)
+        if symbol in self._added:
+            set_hierachical(self._store, (symbol, vector), payload, True)
+            self._emit(symbol, vector)
 
     def _emit(self, symbol, vector):
         subscribed = self._subscribed.get(vector, None)
@@ -227,6 +228,9 @@ class Orchestrator:
 
         if symbol in self._added:
             self._added.remove(symbol)
+
+            if symbol in self._store:
+                del self._store[symbol]
 
             for provider in self._providers.values():
                 provider.remove(symbol)

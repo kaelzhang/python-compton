@@ -137,8 +137,8 @@ async def test_main_remove():
         provider
     ).subscribe(consumer).add(symbol)
 
-    o.remove(symbol)
     await asyncio.sleep(.5)
+    o.remove(symbol)
     consumed = list(consumer.consumed)
     await asyncio.sleep(.5)
 
