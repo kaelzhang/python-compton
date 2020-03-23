@@ -88,7 +88,7 @@ class Reducer(ABC):
             self._not_updated[full_vector] = self.merge(
                 not_updated,
                 payload
-            ) if not_updated else payload
+            ) if not_updated is not None else payload
 
             return False, None
 
