@@ -229,7 +229,7 @@ class Orchestrator:
             self._added.remove(symbol)
 
             for provider in self._providers.values():
-                provider.discard(symbol)
+                provider.remove(symbol)
 
         return self
 
