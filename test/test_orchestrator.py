@@ -69,7 +69,7 @@ async def test_no_concurrent_limit():
     assert len(consumer.consumed) == 5
 
 
-def test_no_concurrent_limit_and_outside_event_lop():
+def test_no_concurrent_limit_and_outside_event_loop():
     loop = asyncio.new_event_loop()
 
     consumer = SimpleConsumer4()
@@ -253,7 +253,7 @@ def test_dispatch_reducer_not_found():
         KeyError,
         match='reducer<DataType.KLINE,TimeSpan.DAY> is not found'
     ):
-        Orchestrator([]).dispatch(
+        Orchestrator([]).add(symbol).dispatch(
             vector,
             symbol,
             {}

@@ -44,14 +44,10 @@ async def test_provider_init_error(caplog):
     assert caplog.text.count('give up') == 1
 
 
-@pytest.mark.asyncio
-async def test_provider_when_update_error(caplog):
-    Orchestrator(
-        [SimpleReducer()]
-    ).connect(
-        SimpleProvider4().go()
-    ).add(symbol)
-
-    await asyncio.sleep(1)
-
-    assert caplog.text.count('background task error: you got me') == 1
+def test_provider_when_update_error():
+    with pytest.raises(RuntimeError, match='you got me'):
+        Orchestrator(
+            [SimpleReducer()]
+        ).connect(
+            SimpleProvider4().go()
+        )

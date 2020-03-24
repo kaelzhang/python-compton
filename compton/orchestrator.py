@@ -114,6 +114,9 @@ class Orchestrator:
 
         self._providers[vector] = provider
 
+        dispatch = partial(self.dispatch, vector)
+        provider.when_update(dispatch)
+
         return self
 
     def subscribe(
@@ -157,6 +160,9 @@ class Orchestrator:
         symbol: Symbol,
         payload: Payload
     ):
+        if symbol not in self._added:
+            return
+
         reducer = get_partial_hierachical(self._reducers, vector)
 
         if reducer is None:
@@ -172,9 +178,8 @@ class Orchestrator:
             self._set_store(symbol, vector, new)
 
     def _set_store(self, symbol, vector, payload):
-        if symbol in self._added:
-            set_hierachical(self._store, (symbol, vector), payload, True)
-            self._emit(symbol, vector)
+        set_hierachical(self._store, (symbol, vector), payload, True)
+        self._emit(symbol, vector)
 
     def _emit(self, symbol, vector):
         subscribed = self._subscribed.get(vector, None)
@@ -240,10 +245,7 @@ class Orchestrator:
     async def _start_providers(self, symbol: Symbol):
         tasks = []
 
-        for vector, provider in self._providers.items():
-            dispatch = partial(self.dispatch, vector)
-            provider.when_update(dispatch)
-
+        for provider in self._providers.values():
             task = self._loop.create_task(
                 self._start_provider(symbol, provider)
             )

@@ -31,12 +31,14 @@ class SimpleProvider(Provider):
         self._future = asyncio.Future()
         self._i = i
         self._discarded = set()
+        self._dispatch = None
 
     @property
     def vector(self):
         return vector
 
     async def init(self, symbol):
+        asyncio.create_task(self._update())
         await self._future
         return dict(i=0)
 
@@ -48,16 +50,16 @@ class SimpleProvider(Provider):
         self._future.set_result(None)
         return self
 
-    async def _update(self, dispatch):
+    async def _update(self):
         i = 1
 
         while i < self.MAX and symbol not in self._discarded:
             await asyncio.sleep(.05)
-            dispatch(symbol, dict(i=i + self._i))
+            self._dispatch(symbol, dict(i=i + self._i))
             i += 1
 
     def when_update(self, dispatch):
-        asyncio.create_task(self._update(dispatch))
+        self._dispatch = dispatch
 
 
 class SimpleProvider2(SimpleProvider):

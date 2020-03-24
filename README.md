@@ -88,6 +88,8 @@ Adds a new symbol to orchestrator, and start the data flow for `symbol`
 
 `Provider` is an abstract class which provides initial data and data updates.
 
+A provider should be implemented to support many symbols
+
 We must inherit class `Provider` and implement some abstract method before use.
 
 - `@property vector` returns an `Vector`
@@ -100,11 +102,11 @@ class MyProvider(Provider):
     def vector(self):
         return (DataType.KLINE, TimeSpan.DAY)
 
-    async def init(self, symbol):
-        return {}
-
     def when_update(self, dispatch):
         pass
+
+    async def init(self, symbol):
+        return {}
 ```
 
 ## Reducer
