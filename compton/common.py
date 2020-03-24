@@ -3,19 +3,6 @@ from typing import (
 )
 
 
-async def background_task(coroutine, logger):
-    try:
-        await coroutine
-    except Exception as e:
-        logger.error('background task error: %s', e)
-
-
-def start_background_task(coroutine, logger, loop):
-    loop.create_task(
-        background_task(coroutine, logger)
-    )
-
-
 def match_vector(vector, target) -> bool:
     """Returns `True` if `vector` matches `target`
 

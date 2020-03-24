@@ -19,7 +19,6 @@ from .common import (
     set_hierachical,
     get_hierachical,
     get_partial_hierachical,
-    start_background_task,
 
     Vector,
     Symbol,
@@ -216,11 +215,7 @@ class Orchestrator:
         if symbol not in self._added:
             self._added.add(symbol)
 
-            start_background_task(
-                self._start_providers(symbol),
-                logger,
-                self._loop
-            )
+            self._loop.create_task(self._start_providers(symbol))
 
         return self
 
