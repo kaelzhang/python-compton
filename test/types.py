@@ -109,6 +109,11 @@ class SimpleReducer2(SimpleReducer):
         return (DataType.KLINE, TimeSpan.DAY)
 
 
+class SimpleReducer3(SimpleReducer):
+    def merge(*args):
+        raise RuntimeError('you got me')
+
+
 class SimpleConsumer(Consumer):
     def __init__(self):
         self.consumed = []
@@ -160,6 +165,11 @@ class SimpleConsumer4(SimpleConsumer2):
 
     def should_process(self, symbol, a, b):
         return a is not None and b is not None
+
+
+class SimpleConsumer6(SimpleConsumer):
+    def should_process(*args):
+        raise RuntimeError('you got me')
 
 
 class SimpleConsumer3(SimpleConsumer):

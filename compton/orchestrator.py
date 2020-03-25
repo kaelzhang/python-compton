@@ -171,7 +171,17 @@ class Orchestrator:
 
         store_vector = (symbol, vector)
         previous = get_hierachical(self._store, store_vector)
-        changed, new = reducer.reduce(init, vector, symbol, previous, payload)
+
+        # We need to try-catch this method,
+        # because it won't be raised to the outside and interrupt the program.
+        # Otherwise it will hard to debug
+        try:
+            changed, new = reducer.reduce(
+                init, vector, symbol, previous, payload
+            )
+        except Exception as e:
+            logger.error('reducer reduce error: %s', e)
+            return
 
         if changed:
             self._set_store(symbol, vector, new)

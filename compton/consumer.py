@@ -115,7 +115,14 @@ class ConsumerSentinel:
             or self._processing < self._max_processing
 
     def process(self, symbol, payloads: List[Payload], loop):
-        if not self._consumer.should_process(symbol, *payloads):
+        # We need to try-catch this method,
+        # because it won't be raised to the outside and interrupt the program.
+        # Otherwise it will hard to debug
+        try:
+            if not self._consumer.should_process(symbol, *payloads):
+                return
+        except Exception as e:
+            logger.error('consumer should_process error: %s', e)
             return
 
         if self._need_all_changes:

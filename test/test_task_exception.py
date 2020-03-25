@@ -10,7 +10,9 @@ from .types import (
     SimpleProvider3,
     SimpleProvider4,
     SimpleReducer,
+    SimpleReducer3,
     SimpleConsumer3,
+    SimpleConsumer6,
     symbol
 )
 
@@ -28,6 +30,36 @@ async def test_process_error(caplog):
     await asyncio.sleep(1)
 
     assert caplog.text.count('you got me') == 3
+
+
+@pytest.mark.asyncio
+async def test_should_process_error(caplog):
+    Orchestrator(
+        [SimpleReducer()]
+    ).connect(
+        SimpleProvider().go()
+    ).subscribe(
+        SimpleConsumer6()
+    ).add(symbol)
+
+    await asyncio.sleep(1)
+
+    assert caplog.text.count('you got me') == 3
+
+
+@pytest.mark.asyncio
+async def test_reducer_reduce_error(caplog):
+    Orchestrator(
+        [SimpleReducer3()]
+    ).connect(
+        SimpleProvider().go()
+    ).subscribe(
+        SimpleConsumer6()
+    ).add(symbol)
+
+    await asyncio.sleep(1)
+
+    assert caplog.text.count('you got me') == 2
 
 
 @pytest.mark.asyncio
