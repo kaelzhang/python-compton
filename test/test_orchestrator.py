@@ -14,11 +14,38 @@ from .types import (
     SimpleConsumer,
     SimpleConsumer2,
     SimpleConsumer4,
+    SimpleConsumer5,
     symbol,
     vector,
 
     DataType
 )
+
+
+@pytest.mark.asyncio
+async def test_partial_init():
+    consumer = SimpleConsumer5()
+    provider = SimpleProvider().go()
+    provider2 = SimpleProvider2()
+
+    Orchestrator(
+        [SimpleReducer()]
+    ).connect(
+        provider
+    ).connect(
+        provider2
+    ).subscribe(
+        consumer
+    ).add(symbol)
+
+    await asyncio.sleep(1)
+
+    assert consumer.consumed == [
+        (0, None), (1, None), (2, None)
+    ]
+
+    provider2.go()
+    await asyncio.sleep(0.1)
 
 
 @pytest.mark.asyncio

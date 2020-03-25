@@ -1,7 +1,8 @@
 files = compton test
+test_files = test_*.py
 
 test:
-	pytest -s -v test/test_*.py --doctest-modules --cov compton --cov-config=.coveragerc --cov-report term-missing
+	pytest -s -v test/$(test_files) --doctest-modules --cov compton --cov-config=.coveragerc --cov-report term-missing
 
 install:
 	pip install -r test-requirements.txt

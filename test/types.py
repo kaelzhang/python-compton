@@ -141,7 +141,12 @@ class SimpleConsumer2(Consumer):
         return payload['i'] == payload2['i']
 
     async def process(self, symbol, payload, payload2):
-        self.consumed.append((payload['i'], payload2['i']))
+        self.consumed.append(
+            (
+                None if payload is None else payload['i'],
+                None if payload2 is None else payload2['i']
+            )
+        )
 
 
 class SimpleConsumer4(SimpleConsumer2):
@@ -153,10 +158,19 @@ class SimpleConsumer4(SimpleConsumer2):
     def concurrency(self):
         return 0
 
-    def should_process(self, *args):
-        return True
+    def should_process(self, symbol, a, b):
+        return a is not None and b is not None
 
 
 class SimpleConsumer3(SimpleConsumer):
     async def process(self, symbol, payload):
         raise RuntimeError('you got me')
+
+
+class SimpleConsumer5(SimpleConsumer2):
+    def should_process(*args):
+        return True
+
+    @property
+    def all(self):
+        return False

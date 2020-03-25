@@ -22,7 +22,7 @@ class Provider(ABC):
     __str__ = partialmethod(stringify, 'provider')
 
     @staticmethod
-    def check(provider):
+    def check(provider) -> None:
         if not isinstance(provider, Provider):
             raise ValueError(
                 f'provider must be an instance of Provider, but got `{provider}`'  # noqa: E501
@@ -43,7 +43,7 @@ class Provider(ABC):
     async def init(
         self,
         symbol: Symbol
-    ) -> Optional[object]:  # pragma: no cover
+    ) -> Optional[Payload]:  # pragma: no cover
         """Initialize the data for symbol `symbol` from the very beginning
         """
 

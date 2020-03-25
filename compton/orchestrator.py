@@ -39,7 +39,7 @@ class Orchestrator:
         self,
         reducers: List[Reducer],
         loop=None
-    ):
+    ) -> None:
         self._store = {}
         self._providers = {}
         self._subscribed = {}
@@ -203,7 +203,10 @@ class Orchestrator:
 
     def _get_payloads_by_vectors(self, symbol, vectors):
         store = self._store[symbol]
-        return [store.get(vector) for vector in vectors]
+        return [
+            store.get(vector)
+            for vector in vectors
+        ]
 
     def add(
         self,

@@ -1,7 +1,9 @@
 import logging
 from abc import ABC, abstractmethod
 from typing import (
-    List
+    List,
+    Tuple,
+    Optional
 )
 
 from .common import (
@@ -9,13 +11,16 @@ from .common import (
     stringify_vector,
 
     Payload,
-    Vector
+    Vector,
+    Symbol
 )
+
+Payloads = Tuple[Optional[Payload], ...]
 
 
 class Consumer(ABC):
     @staticmethod
-    def check(consumer):
+    def check(consumer) -> None:
         if not isinstance(consumer, Consumer):
             raise ValueError(
                 f'consumer must be an instance of Consumer, but got `{consumer}`'  # noqa: E501
@@ -24,7 +29,7 @@ class Consumer(ABC):
         for vector in consumer.vectors:
             check_vector(vector, consumer)
 
-    def __str__(self):
+    def __str__(self) -> str:
         try:
             vectors = stringify_vector([
                 stringify_vector(vector)
@@ -41,18 +46,26 @@ class Consumer(ABC):
         return
 
     @property
-    def all(self):
+    def all(self) -> bool:
         return False
 
     @property
-    def concurrency(self):
+    def concurrency(self) -> int:
         return 0
 
-    def should_process(self, symbol, *args) -> bool:
+    def should_process(
+        self,
+        symbol: Symbol,
+        *payloads: Payloads
+    ) -> bool:
         return True
 
     @abstractmethod
-    async def process(self, symbol, *args):  # pragma: no cover
+    async def process(
+        self,
+        symbol: Symbol,
+        *payloads: Payloads
+    ) -> None:  # pragma: no cover
         pass
 
 

@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from functools import partialmethod
 from typing import (
     Optional,
-    Tuple,
+    Tuple
 )
 
 from .common import (
@@ -22,7 +22,7 @@ class Reducer(ABC):
     __str__ = partialmethod(stringify, 'reducer')
 
     @staticmethod
-    def check(reducer):
+    def check(reducer) -> None:
         if not isinstance(reducer, Reducer):
             raise ValueError(
                 f'reducer must be an instance of Reducer, but got `{reducer}`'  # noqa: E501
@@ -30,7 +30,7 @@ class Reducer(ABC):
 
         check_vector(reducer.vector, reducer)
 
-    def __init__(self):
+    def __init__(self) -> None:
         self._not_updated = {}
 
     @property
@@ -97,7 +97,7 @@ class Reducer(ABC):
     @abstractmethod
     def merge(
         self,
-        target: Payload,
+        target: Optional[Payload],
         payload: Payload
     ) -> Payload:  # pragma: no cover
         pass
