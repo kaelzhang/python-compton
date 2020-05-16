@@ -114,7 +114,7 @@ class Orchestrator:
         self._providers[vector] = provider
 
         dispatch = partial(self.dispatch, vector)
-        provider.when_update(dispatch)
+        provider.when_update(dispatch)  # type: ignore
 
         return self
 
@@ -145,12 +145,17 @@ class Orchestrator:
 
         return self
 
-    def dispatch(self, *args) -> None:
+    def dispatch(
+        self,
+        vector: Vector,
+        symbol: Symbol,
+        payload: Payload
+    ) -> None:
         """Dispatch updates to a certain vector.
         This method is mainly used for testing purpose
         """
 
-        self._dispatch(False, *args)
+        self._dispatch(False, vector, symbol, payload)
 
     def _dispatch(
         self,

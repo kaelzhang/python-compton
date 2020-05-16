@@ -2,7 +2,6 @@ import logging
 from abc import ABC, abstractmethod
 from typing import (
     List,
-    Tuple,
     Optional
 )
 
@@ -14,8 +13,6 @@ from .common import (
     Vector,
     Symbol
 )
-
-Payloads = Tuple[Optional[Payload], ...]
 
 
 class Consumer(ABC):
@@ -56,7 +53,7 @@ class Consumer(ABC):
     def should_process(
         self,
         symbol: Symbol,
-        *payloads: Payloads
+        *payloads: Optional[Payload]
     ) -> bool:
         return True
 
@@ -64,7 +61,7 @@ class Consumer(ABC):
     async def process(
         self,
         symbol: Symbol,
-        *payloads: Payloads
+        *payloads: Optional[Payload]
     ) -> None:  # pragma: no cover
         pass
 
