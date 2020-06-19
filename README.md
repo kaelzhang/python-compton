@@ -148,19 +148,29 @@ class MyConsumer(Consumer):
         ]
 
     @property
-    def all(self):
-        # `True` indicates that the consumer will only go processing
-        # if both of the data corresponds with the two vectors have changes
+    def all(self) -> bool:
+        """
+        `True` indicates that the consumer will only go processing
+        if both of the data corresponds with the two vectors have changes
 
-        # And by default, `Consumer::all` is False
+        And by default, `Consumer::all` is False
+        """
         return True
 
     @property
-    def concurrency(self):
-        # concurrency limit for method `process()`
+    def concurrency(self) -> int:
+        """
+        Concurrency limit for method `process()`
 
-        # By default, `Consumer::concurrency` is `0` which means no limit
+        By default, `Consumer::concurrency` is `0` which means no limit
+        """
         return 1
+
+    def should_process(self, *payloads) -> bool:
+        """
+        If this method returns `False`, then the data update will not be processed
+        """
+        return True
 
     # Then there will be
     # both `kline_day` and `kline_week` passed into method `process`
