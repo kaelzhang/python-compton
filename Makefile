@@ -5,7 +5,7 @@ test:
 	pytest -s -v test/$(test_files) --doctest-modules --cov compton --cov-config=.coveragerc --cov-report term-missing
 
 install:
-	pip install -r test-requirements.txt
+	pip install -r -U test-requirements.txt
 
 lint:
 	flake8 $(files)
