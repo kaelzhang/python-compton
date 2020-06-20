@@ -2,7 +2,7 @@ import asyncio
 import logging
 from functools import partial
 from typing import (
-    List
+    Iterable
 )
 
 from .provider import Provider
@@ -37,7 +37,7 @@ class Orchestrator:
 
     def __init__(
         self,
-        reducers: List[Reducer],
+        reducers: Iterable[Reducer],
         loop=None
     ) -> None:
         self._store = {}
@@ -55,7 +55,7 @@ class Orchestrator:
         return frozenset(self._added)
 
     @property
-    def _loop(self):
+    def _loop(self) -> asyncio.AbstractEventLoop:
         """Lazy initialize the _loop property
         """
 
@@ -66,7 +66,10 @@ class Orchestrator:
         self.__loop = loop
         return loop
 
-    def _apply_reducers(self, reducers):
+    def _apply_reducers(
+        self,
+        reducers: Iterable[Reducer]
+    ) -> None:
         saved_reducers = self._reducers
 
         for reducer in reducers:
@@ -191,11 +194,16 @@ class Orchestrator:
         if changed:
             self._set_store(symbol, vector, new)
 
-    def _set_store(self, symbol, vector, payload):
+    def _set_store(
+        self,
+        symbol,
+        vector,
+        payload
+    ) -> None:
         set_hierachical(self._store, (symbol, vector), payload, True)
         self._emit(symbol, vector)
 
-    def _emit(self, symbol, vector):
+    def _emit(self, symbol, vector) -> None:
         subscribed = self._subscribed.get(vector, None)
 
         if not subscribed:

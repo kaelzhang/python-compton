@@ -22,7 +22,7 @@ def test_check():
             SimpleReducer()
         ]).connect(
             SimpleProvider()
-        ).subscribe(A())
+        ).subscribe(A())  # type: ignore
 
 
 def test_str():
@@ -31,7 +31,7 @@ def test_str():
         def vectors(self):
             return 1
 
-        def process():
+        def process(self):
             pass
 
     assert str(InvalidConsumer()) == 'consumer<invalid>'
@@ -41,7 +41,7 @@ def test_str():
         def vectors(self):
             return [(1,), (2,)]
 
-        def process():
+        def process(self):
             pass
 
     assert str(ValidVectorsConsumer()) == 'consumer<<1>,<2>>'

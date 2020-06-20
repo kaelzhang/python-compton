@@ -1,9 +1,21 @@
 from typing import (
-    Any
+    Any,
+    Optional,
+    Tuple,
+    Hashable,
+    List
 )
 
 
-def match_vector(vector, target) -> bool:
+Symbol = str
+Payload = object
+Vector = Tuple[Hashable, ...]
+
+
+def match_vector(
+    vector: Vector,
+    target: Vector
+) -> bool:
     """Returns `True` if `vector` matches `target`
 
     If two vectors has a common sub vector at the beginning, then
@@ -26,11 +38,11 @@ def match_vector(vector, target) -> bool:
 
 def set_hierachical(
     target: dict,
-    vector: tuple,
+    vector: Vector,
     value,
     loose: bool,
-    context: list = []
-):
+    context: List[Hashable] = []
+) -> Tuple[bool, Optional[list]]:
     """Set the value to a dict hirachically
 
     Args:
@@ -66,13 +78,14 @@ def set_hierachical(
         current,
         vector[1:],
         value,
+        loose,
         [*context, first]
     )
 
 
 def get_hierachical(
     target: dict,
-    vector: tuple
+    vector: Vector
 ) -> Any:
     """Get a property from a nested dict
 
@@ -92,7 +105,7 @@ def get_hierachical(
 
 def get_partial_hierachical(
     target: dict,
-    vector: tuple
+    vector: Vector
 ) -> Any:
     """Get a property from a nested dict, it will
     return the first non-dict object
@@ -108,11 +121,6 @@ def get_partial_hierachical(
             return target
 
 
-Symbol = str
-Payload = object
-Vector = tuple
-
-
 VECTOR_SEPARATOR = ','
 
 
@@ -120,7 +128,7 @@ def stringify_vector(list_like):
     return f'<{VECTOR_SEPARATOR.join([str(x) for x in list_like])}>'
 
 
-def stringify(self, name):
+def stringify(self, name: str) -> str:
     try:
         vector_str = stringify_vector(self.vector)
     except Exception:

@@ -41,8 +41,7 @@ class Reducer(ABC):
 
         Reducer::vector always does semi matching
         """
-
-        return
+        ...
 
     def reduce(
         self,
@@ -100,4 +99,4 @@ class Reducer(ABC):
         target: Optional[Payload],
         payload: Payload
     ) -> Payload:  # pragma: no cover
-        pass
+        ...

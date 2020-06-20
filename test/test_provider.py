@@ -19,7 +19,7 @@ def test_check():
     ):
         Orchestrator([
             SimpleReducer()
-        ]).connect(A())
+        ]).connect(A())  # type: ignore
 
 
 def test_str():
@@ -28,13 +28,13 @@ def test_str():
         def vector(self):
             return 1
 
-        def init():
+        def init(self):
             pass
 
-        def remove():
+        def remove(self):
             pass
 
-        def when_update():
+        def when_update(self):
             pass
 
     assert str(InvalidProvider()) == 'provider<invalid>'
@@ -52,13 +52,13 @@ def test_str():
         def vector(self):
             return (1, 2)
 
-        def init():
+        def init(self):
             pass
 
-        def remove():
+        def remove(self):
             pass
 
-        def when_update():
+        def when_update(self):
             pass
 
     assert str(ValidVectorProvider()) == 'provider<1,2>'
@@ -70,13 +70,13 @@ def test_vector_not_hashable():
         def vector(self):
             return ({},)
 
-        def init():
+        def init(self):
             pass
 
-        def remove():
+        def remove(self):
             pass
 
-        def when_update():
+        def when_update(self):
             pass
 
     with pytest.raises(

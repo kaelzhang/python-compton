@@ -2,7 +2,8 @@ from abc import ABC, abstractmethod
 from functools import partialmethod
 from typing import (
     Callable,
-    Optional
+    Optional,
+    Any
 )
 
 from .common import (
@@ -22,7 +23,7 @@ class Provider(ABC):
     __str__ = partialmethod(stringify, 'provider')
 
     @staticmethod
-    def check(provider) -> None:
+    def check(provider: Any) -> None:
         if not isinstance(provider, Provider):
             raise ValueError(
                 f'provider must be an instance of Provider, but got `{provider}`'  # noqa: E501
@@ -36,8 +37,7 @@ class Provider(ABC):
         """A provider should only have one vector
         which means a provider should only handle a single type of message
         """
-
-        return
+        ...
 
     @abstractmethod
     async def init(
@@ -46,8 +46,7 @@ class Provider(ABC):
     ) -> Optional[Payload]:  # pragma: no cover
         """Initialize the data for symbol `symbol` from the very beginning
         """
-
-        return
+        ...
 
     @abstractmethod
     def remove(
@@ -56,14 +55,13 @@ class Provider(ABC):
     ) -> None:  # pragma: no cover
         """Discard the symbol, and do not receive further updates
         """
-
-        return
+        ...
 
     @abstractmethod
     def when_update(
+        self,
         dispatch: Callable[[Symbol, Payload], None]
     ) -> None:  # pragma: no cover
         """Sets the receiver to receive update messages
         """
-
-        return
+        ...

@@ -13,4 +13,4 @@ def test_check():
         ValueError,
         match='must be an instance of Reducer'
     ):
-        Orchestrator([A()])
+        Orchestrator([A()])  # type: ignore
