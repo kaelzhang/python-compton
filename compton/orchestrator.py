@@ -158,6 +158,12 @@ class Orchestrator:
         This method is mainly used for testing purpose
         """
 
+        try:
+            asyncio.get_running_loop()
+        except RuntimeError:
+            raise RuntimeError(
+                'dispatch() should only be invoked in a coroutine')
+
         self._dispatch(False, vector, symbol, payload)
 
     def _dispatch(

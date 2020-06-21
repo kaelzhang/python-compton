@@ -280,6 +280,19 @@ def test_dispatch_reducer_not_found():
         KeyError,
         match='reducer<DataType.KLINE,TimeSpan.DAY> is not found'
     ):
+        Orchestrator([]).add(symbol)._dispatch(
+            False,
+            vector,
+            symbol,
+            {}
+        )
+
+
+def test_dispatch_in_non_coroutine():
+    with pytest.raises(
+        RuntimeError,
+        match='should only be invoked in a coroutine'
+    ):
         Orchestrator([]).add(symbol).dispatch(
             vector,
             symbol,

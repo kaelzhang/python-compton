@@ -32,6 +32,21 @@ async def test_process_error(caplog):
 
 
 @pytest.mark.asyncio
+async def test_process_error_delayed_update(caplog):
+    Orchestrator(
+        [SimpleReducer()]
+    ).connect(
+        SimpleProvider(update_delay=1).go()
+    ).subscribe(
+        SimpleConsumer3()
+    ).add(symbol)
+
+    await asyncio.sleep(2)
+
+    assert caplog.text.count('you got me') == 3
+
+
+@pytest.mark.asyncio
 async def test_should_process_error(caplog):
     Orchestrator(
         [SimpleReducer()]

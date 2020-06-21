@@ -24,7 +24,7 @@ class Provider(ABC):
     Notice that self.dispatch should be called in a coroutine
     """
 
-    dispatch: Dispatcher
+    _dispatch: Optional[Dispatcher]
 
     __str__ = partialmethod(stringify, 'provider')
 

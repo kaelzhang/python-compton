@@ -88,7 +88,7 @@ We must inherit class `Provider` and implement some abstract method before use.
 
 - `@property vector` returns an `Vector`
 - `async def init()` method returns the initial data
-- There is an protected method `self.dispatch(symbol, payload)`, which should only be called in a coroutine, to set the payload updated.
+- There is an protected method `self.dispatch(symbol, payload)` to set the payload updated, which should only be called in a coroutine, or a `RuntimeError` is raised.
 
 ```py
 class MyProvider(Provider):

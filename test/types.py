@@ -27,11 +27,12 @@ vector2 = (DataType.KLINE, TimeSpan.WEEK)
 class SimpleProvider(Provider):
     MAX = 3
 
-    def __init__(self, i=0):
+    def __init__(self, i=0, update_delay=0):
         self._future = asyncio.Future()
         self._i = i
         self._discarded = set()
         self._dispatch = None
+        self._update_delay = update_delay
 
     @property
     def vector(self):
@@ -51,6 +52,9 @@ class SimpleProvider(Provider):
         return self
 
     async def _update(self):
+        if self._update_delay:
+            await asyncio.sleep(self._update_delay)
+
         i = 1
 
         while i < self.MAX and symbol not in self._discarded:
