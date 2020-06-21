@@ -55,11 +55,8 @@ class SimpleProvider(Provider):
 
         while i < self.MAX and symbol not in self._discarded:
             await asyncio.sleep(.05)
-            self._dispatch(symbol, dict(i=i + self._i))
+            self.dispatch(symbol, dict(i=i + self._i))
             i += 1
-
-    def when_update(self, dispatch):
-        self._dispatch = dispatch
 
 
 class SimpleProvider2(SimpleProvider):
@@ -73,11 +70,6 @@ class SimpleProvider2(SimpleProvider):
 
 class SimpleProvider3(SimpleProvider):
     async def init(self, symbol):
-        raise RuntimeError('you got me')
-
-
-class SimpleProvider4(SimpleProvider):
-    def when_update(self, dispatch):
         raise RuntimeError('you got me')
 
 
@@ -110,7 +102,7 @@ class SimpleReducer2(SimpleReducer):
 
 
 class SimpleReducer3(SimpleReducer):
-    def merge(*args):
+    def merge(self, *args):
         raise RuntimeError('you got me')
 
 
@@ -168,7 +160,7 @@ class SimpleConsumer4(SimpleConsumer2):
 
 
 class SimpleConsumer6(SimpleConsumer):
-    def should_process(*args):
+    def should_process(self, *args):
         raise RuntimeError('you got me')
 
 
@@ -178,7 +170,7 @@ class SimpleConsumer3(SimpleConsumer):
 
 
 class SimpleConsumer5(SimpleConsumer2):
-    def should_process(*args):
+    def should_process(self, *args):
         return True
 
     @property

@@ -16,9 +16,15 @@ from .common import (
 )
 
 
+Dispatcher = Callable[[Symbol, Payload], None]
+
+
 class Provider(ABC):
     """
+    Notice that self.dispatch should be called in a coroutine
     """
+
+    dispatch: Dispatcher
 
     __str__ = partialmethod(stringify, 'provider')
 
@@ -57,11 +63,10 @@ class Provider(ABC):
         """
         ...
 
-    @abstractmethod
     def when_update(
         self,
-        dispatch: Callable[[Symbol, Payload], None]
+        dispatch: Dispatcher
     ) -> None:  # pragma: no cover
         """Sets the receiver to receive update messages
         """
-        ...
+        self.dispatch = dispatch

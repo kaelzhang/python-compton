@@ -8,7 +8,6 @@ from compton import (
 from .types import (
     SimpleProvider,
     SimpleProvider3,
-    SimpleProvider4,
     SimpleReducer,
     SimpleReducer3,
     SimpleConsumer3,
@@ -74,12 +73,3 @@ async def test_provider_init_error(caplog):
 
     assert caplog.text.count('you got me') == 4
     assert caplog.text.count('give up') == 1
-
-
-def test_provider_when_update_error():
-    with pytest.raises(RuntimeError, match='you got me'):
-        Orchestrator(
-            [SimpleReducer()]
-        ).connect(
-            SimpleProvider4().go()
-        )

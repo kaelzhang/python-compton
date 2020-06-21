@@ -34,9 +34,6 @@ def test_str():
         def remove(self):
             pass
 
-        def when_update(self):
-            pass
-
     assert str(InvalidProvider()) == 'provider<invalid>'
 
     with pytest.raises(
@@ -58,9 +55,6 @@ def test_str():
         def remove(self):
             pass
 
-        def when_update(self):
-            pass
-
     assert str(ValidVectorProvider()) == 'provider<1,2>'
 
 
@@ -74,9 +68,6 @@ def test_vector_not_hashable():
             pass
 
         def remove(self):
-            pass
-
-        def when_update(self):
             pass
 
     with pytest.raises(
