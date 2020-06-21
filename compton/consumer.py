@@ -2,7 +2,8 @@ import logging
 from abc import ABC, abstractmethod
 from typing import (
     List,
-    Optional
+    Optional,
+    Iterable
 )
 
 from .common import (
@@ -39,7 +40,7 @@ class Consumer(ABC):
 
     @property
     @abstractmethod
-    def vectors(self) -> List[Vector]:  # pragma: no cover
+    def vectors(self) -> Iterable[Vector]:  # pragma: no cover
         return
 
     @property
