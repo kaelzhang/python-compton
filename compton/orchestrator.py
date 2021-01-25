@@ -2,7 +2,7 @@ import asyncio
 import logging
 from functools import partial
 from typing import (
-    Iterable
+    Dict, FrozenSet, Iterable, List, Set
 )
 
 from .provider import Provider
@@ -35,6 +35,11 @@ class Orchestrator:
 
     MAX_INIT_RETRIES = 3
 
+    _providers: Dict[Vector, Provider]
+    _subscribed: Dict[Vector, List[Consumer]]
+    _reducers: Iterable[Reducer]
+    _added: Set[Symbol]
+
     def __init__(
         self,
         reducers: Iterable[Reducer],
@@ -51,7 +56,7 @@ class Orchestrator:
         self.__loop = loop
 
     @property
-    def added(self) -> frozenset:
+    def added(self) -> FrozenSet[Symbol]:
         return frozenset(self._added)
 
     @property
@@ -172,7 +177,7 @@ class Orchestrator:
         vector: Vector,
         symbol: Symbol,
         payload: Payload
-    ):
+    ) -> None:
         if symbol not in self._added:
             return
 
