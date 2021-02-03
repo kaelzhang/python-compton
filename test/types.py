@@ -65,7 +65,11 @@ class SimpleProvider(Provider):
 
 class SimpleProvider2(SimpleProvider):
     def __init__(self):
-        super().__init__(1)
+        super().__init__(
+            1,
+            # make sure SimpleProvider2 always comes after SimpleProvider1
+            0.01
+        )
 
     @property
     def vector(self):

@@ -22,30 +22,39 @@ from .types import (
 )
 
 
-@pytest.mark.asyncio
-async def test_partial_init():
-    consumer = SimpleConsumer5()
-    provider = SimpleProvider().go()
-    provider2 = SimpleProvider2()
+def test_no_concurrent_limit_and_outside_event_loop():
+    loop = asyncio.new_event_loop()
 
-    Orchestrator(
-        [SimpleReducer()]
+    consumer = SimpleConsumer4()
+    provider = SimpleProvider().go()
+    provider2 = SimpleProvider2().go()
+
+    orchestrator = Orchestrator(
+        [SimpleReducer()],
+        loop
     ).connect(
         provider
     ).connect(
         provider2
     ).subscribe(
         consumer
-    ).add(symbol)
+    )
 
-    await asyncio.sleep(1)
+    orchestrator.add(symbol).add(symbol)
 
-    assert consumer.consumed == [
-        (0, None), (1, None), (2, None)
-    ]
+    async def stop():
+        await asyncio.sleep(2)
 
-    provider2.go()
-    await asyncio.sleep(0.1)
+    loop.run_until_complete(stop())
+    loop.stop()
+
+    assert len(consumer.consumed) == 5
+    assert list(orchestrator.added) == [symbol]
+
+    orchestrator.remove(symbol).remove(symbol)
+    assert not orchestrator.added
+
+    loop.close()
 
 
 @pytest.mark.asyncio
@@ -76,6 +85,32 @@ async def test_main():
 
 
 @pytest.mark.asyncio
+async def test_partial_init():
+    consumer = SimpleConsumer5()
+    provider = SimpleProvider().go()
+    provider2 = SimpleProvider2()
+
+    Orchestrator(
+        [SimpleReducer()]
+    ).connect(
+        provider
+    ).connect(
+        provider2
+    ).subscribe(
+        consumer
+    ).add(symbol)
+
+    await asyncio.sleep(1)
+
+    assert consumer.consumed == [
+        (0, None), (1, None), (2, None)
+    ]
+
+    provider2.go()
+    await asyncio.sleep(0.1)
+
+
+@pytest.mark.asyncio
 async def test_no_concurrent_limit():
     consumer = SimpleConsumer4()
     provider = SimpleProvider().go()
@@ -94,42 +129,6 @@ async def test_no_concurrent_limit():
     await asyncio.sleep(1)
 
     assert len(consumer.consumed) == 5
-
-
-def test_no_concurrent_limit_and_outside_event_loop():
-    loop = asyncio.new_event_loop()
-
-    consumer = SimpleConsumer4()
-    provider = SimpleProvider().go()
-    provider2 = SimpleProvider2().go()
-
-    orchestrator = Orchestrator(
-        [SimpleReducer()],
-        loop
-    ).connect(
-        provider
-    ).connect(
-        provider2
-    ).subscribe(
-        consumer
-    )
-
-    orchestrator.add(symbol).add(symbol)
-
-    async def stop():
-        await asyncio.sleep(1)
-
-    loop.run_until_complete(stop())
-    loop.stop()
-
-    assert len(consumer.consumed) == 5
-    assert list(orchestrator.added) == [symbol]
-
-    orchestrator.remove(symbol).remove(symbol)
-    assert not orchestrator.added
-
-    loop.run_forever()
-    loop.close()
 
 
 @pytest.mark.asyncio
