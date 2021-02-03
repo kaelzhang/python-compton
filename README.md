@@ -55,15 +55,16 @@ vector = (DataType.KLINE, TimeSpan.DAY)
 ## Orchestrator(reducers, loop=None)
 
 - **reducers** `List[Reducer]` reducers to compose data
-- **loop** `EventLoop` The event loop object to use
+- **loop?** `Optional[EventLoop]` The event loop object to use. In most cases, you should **NOT** pass this argument, unless you exact know what you are doing.
 
 ```py
-orchestrator = Orchestrator(
-    Reducers,
-    loop
-)
-
-orchestrator.add('US.TSLA')
+Orchestrator(
+    reducers
+).connect(
+    provider
+).subscribe(
+    consumer
+).add('TSLA')
 ```
 
 ### orchestrator.connect(provider: Provider) -> self
