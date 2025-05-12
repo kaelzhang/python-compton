@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/kaelzhang/python-compton.svg?branch=master)](https://travis-ci.org/kaelzhang/python-compton)
+[![Test](https://github.com/kaelzhang/python-compton/actions/workflows/test.yml/badge.svg)](https://github.com/kaelzhang/python-compton/actions/workflows/test.yml)
 [![Coverage](https://codecov.io/gh/kaelzhang/python-compton/branch/master/graph/badge.svg)](https://codecov.io/gh/kaelzhang/python-compton)
 <!-- optional appveyor tst
 [![Windows Build Status](https://ci.appveyor.com/api/projects/status/github/kaelzhang/python-compton?branch=master&svg=true)](https://ci.appveyor.com/project/kaelzhang/python-compton)
