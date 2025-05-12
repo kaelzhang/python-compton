@@ -275,10 +275,11 @@ class Orchestrator:
         return self
 
     async def _start_providers(self, symbol: Symbol):
-        await asyncio.wait([
-            self._start_provider(symbol, provider)
+        tasks = [
+            asyncio.create_task(self._start_provider(symbol, provider))
             for provider in self._providers.values()
-        ])
+        ]
+        await asyncio.wait(tasks)
 
     async def _start_provider(
         self,
