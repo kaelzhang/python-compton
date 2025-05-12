@@ -102,7 +102,7 @@ class Reducer(ABC):
     @abstractmethod
     def merge(
         self,
-        target: Optional[Payload],
+        previous: Optional[Payload],
         payload: Payload
     ) -> Payload:  # pragma: no cover
         ...

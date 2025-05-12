@@ -1,5 +1,8 @@
 from .orchestrator import Orchestrator
-from .provider import Provider
+from .provider import (
+    Provider,
+    Dispatcher
+)
 from .reducer import Reducer
 from .consumer import Consumer
 from .common import (
@@ -9,4 +12,4 @@ from .common import (
 )
 
 
-__version__ = '4.0.9'
+__version__ = '4.0.10'

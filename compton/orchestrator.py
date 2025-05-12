@@ -125,7 +125,7 @@ class Orchestrator:
         self._providers[vector] = provider
 
         dispatch = partial(self.dispatch, vector)
-        provider.when_update(dispatch)  # type: ignore
+        provider.when_update(dispatch)
 
         return self
 

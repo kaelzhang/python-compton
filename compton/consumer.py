@@ -51,6 +51,9 @@ class Consumer(ABC):
 
     @property
     def concurrency(self) -> int:
+        """
+        Concurrency limit for method `process`
+        """
         return 0
 
     def should_process(
@@ -66,7 +69,7 @@ class Consumer(ABC):
         symbol: Symbol,
         *payloads: Optional[Payload]
     ) -> None:  # pragma: no cover
-        pass
+        ...
 
 
 logger = logging.getLogger(__name__)
@@ -113,8 +116,10 @@ class ConsumerSentinel:
 
         # No concurrency limit
         # Or does not reach the limit
-        return self._max_processing == 0 \
+        return (
+            self._max_processing == 0
             or self._processing < self._max_processing
+        )
 
     def process(self, symbol, payloads: List[Payload], loop):
         # We need to try-catch this method,

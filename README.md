@@ -94,11 +94,17 @@ We must inherit class `Provider` and implement some abstract method before use.
 ```py
 class MyProvider(Provider):
     @property
-    def vector(self):
+    def vector(self) -> Vector:
         return (DataType.KLINE, TimeSpan.DAY)
 
+    # @abstractmethod
     async def init(self, symbol):
         return {}
+
+    # Optional
+    def when_update(self, dispatch: Dispatcher):
+        # Then save the `dispatch` method for further data updating
+        # by default, it saves as `self.dispatch`
 ```
 
 ## Reducer
@@ -116,13 +122,13 @@ class MyReducer(Reducer):
         # - and (DataType.KLINE, TimeSpan.WEEK)
         return (DataType.KLINE,)
 
-    def merge(self, old, new):
-        # `old` might be `None`, if `new` is the initial data
-        if old is None:
+    def merge(self, previous, payload):
+        # `previous` might be `None`, if `payload` is the initial data
+        if previous is None:
             # We could clean the initial data
-            return clean(new)
+            return clean(payload)
 
-        return {**old, **new}
+        return {**previous, **payload}
 ```
 
 ## Consumer
