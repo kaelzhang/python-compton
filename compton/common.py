@@ -66,7 +66,7 @@ def set_hierachical(
     if first in target:
         current = target[first]
 
-        if type(current) is not dict:
+        if not isinstance(current, dict):
             # There is a conflict
             return False, [*context, first]
     else:
@@ -117,7 +117,7 @@ def get_partial_hierachical(
 
         target = target[key]
 
-        if type(target) is not dict:
+        if not isinstance(target, dict):
             return target
 
 

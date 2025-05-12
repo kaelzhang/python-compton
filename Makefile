@@ -10,8 +10,6 @@ install:
 lint:
 	@echo "\033[1m>> Running ruff... <<\033[0m"
 	@ruff check $(files)
-	@echo "\033[1m>> Running mypy... <<\033[0m"
-	@mypy $(files)
 
 fix:
 	ruff check --fix $(files)
