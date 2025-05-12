@@ -3,13 +3,22 @@ from typing import (
     Optional,
     Tuple,
     Hashable,
-    List
+    List,
+    TypeVar,
+    Dict,
+    Union,
+    Iterable
 )
 
 
 Symbol = str
 Payload = object
 Vector = Tuple[Hashable, ...]
+
+T = TypeVar('T')
+
+HierarchicalDict = Dict[Hashable, Union[T, 'HierarchicalDict[T]']]
+HierarchicalDictV = Union[T, 'HierarchicalDict[T]']
 
 
 def match_vector(
@@ -36,19 +45,24 @@ def match_vector(
     return vector == sub_target
 
 
-def set_hierachical(
-    target: dict,
+def set_hierarchical(
+    target: HierarchicalDict[T],
     vector: Vector,
-    value,
+    value: T,
     loose: bool,
     context: List[Hashable] = []
-) -> Tuple[bool, Optional[list]]:
+) -> Tuple[bool, Optional[List[Hashable]]]:
     """Set the value to a dict hirachically
 
     Args:
         vector (tuple): the length of vector must be larger than 0
         loose (bool): If `False`, if the target already exists,
         it will treat it as a failure
+
+    Returns:
+        tuple:
+            - bool: whether the value is set
+            - list: the context of the value
     """
 
     first = vector[0]
@@ -74,7 +88,7 @@ def set_hierachical(
         current = {}
         target[first] = current
 
-    return set_hierachical(
+    return set_hierarchical(
         current,
         vector[1:],
         value,
@@ -83,48 +97,54 @@ def set_hierachical(
     )
 
 
-def get_hierachical(
-    target: dict,
+def get_hierarchical(
+    target: HierarchicalDict[T],
     vector: Vector
-) -> Any:
-    """Get a property from a nested dict
+) -> Optional[Union[T, HierarchicalDict[T]]]:
+    """Get a property from a hierarchical dict
 
     Args:
         target (dict): the dict
         vector (tuple):
     """
 
+    current: HierarchicalDictV[T] = target
+
     for key in vector:
-        if key not in target:
-            return
+        if not isinstance(current, dict) or key not in current:
+            return None
 
-        target = target[key]
+        current = current[key]
 
-    return target
+    return current
 
 
-def get_partial_hierachical(
-    target: dict,
+def get_partial_hierarchical(
+    target: HierarchicalDict[T],
     vector: Vector
-) -> Any:
-    """Get a property from a nested dict, it will
+) -> Optional[T]:
+    """Get a property from a hierarchical dict, it will
     return the first non-dict object
     """
 
+    current: HierarchicalDictV[T] = target
+
     for key in vector:
-        if key not in target:
-            return
+        if not isinstance(current, dict):
+            return current
 
-        target = target[key]
+        if key not in current:
+            return None
 
-        if not isinstance(target, dict):
-            return target
+        current = current[key]
+
+    return None
 
 
 VECTOR_SEPARATOR = ','
 
 
-def stringify_vector(list_like):
+def stringify_vector(list_like: Iterable[Hashable]) -> str:
     return f'<{VECTOR_SEPARATOR.join([str(x) for x in list_like])}>'
 
 
