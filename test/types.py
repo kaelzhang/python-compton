@@ -1,4 +1,6 @@
 import asyncio
+from typing import Union
+
 from compton import (
     Provider,
     Reducer,
@@ -25,7 +27,7 @@ vector2 = (DataType.KLINE, TimeSpan.WEEK)
 
 
 class SimpleProvider(Provider):
-    MAX = 3
+    MAX: Union[int, float] = 3
 
     def __init__(self, i=0, update_delay=0):
         self._future = asyncio.Future()

@@ -3,7 +3,9 @@ from abc import ABC, abstractmethod
 from typing import (
     List,
     Optional,
-    Iterable
+    Iterable,
+    Dict,
+    Set
 )
 
 from .common import (
@@ -41,7 +43,7 @@ class Consumer(ABC):
     @property
     @abstractmethod
     def vectors(self) -> Iterable[Vector]:  # pragma: no cover
-        return
+        ...
 
     @property
     def all(self) -> bool:
@@ -71,6 +73,8 @@ logger = logging.getLogger(__name__)
 
 
 class ConsumerSentinel:
+    _changed: Dict[Symbol, Set[Vector]]
+
     def __init__(
         self,
         consumer: Consumer

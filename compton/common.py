@@ -3,7 +3,6 @@ from typing import (
     Optional,
     Tuple,
     Hashable,
-    List,
     TypeVar,
     Dict,
     Union,
@@ -50,8 +49,8 @@ def set_hierarchical(
     vector: Vector,
     value: T,
     loose: bool,
-    context: List[Hashable] = []
-) -> Tuple[bool, Optional[List[Hashable]]]:
+    context: Iterable[Hashable] = []
+) -> Tuple[bool, Iterable[Hashable]]:
     """Set the value to a dict hirachically
 
     Args:
@@ -66,6 +65,8 @@ def set_hierarchical(
     """
 
     first = vector[0]
+    current_context = [*context, first]
+
 
     if len(vector) == 1:
         # The last item
@@ -73,16 +74,16 @@ def set_hierarchical(
             # Which means it is the last item of the vector,
             # we just set the value
             target[first] = value
-            return True, None
+            return True, current_context
         else:
-            return False, [*context, first]
+            return False, current_context
 
     if first in target:
         current = target[first]
 
         if not isinstance(current, dict):
             # There is a conflict
-            return False, [*context, first]
+            return False, current_context
     else:
         # The next level does not exists, we just create it
         current = {}
@@ -93,7 +94,7 @@ def set_hierarchical(
         vector[1:],
         value,
         loose,
-        [*context, first]
+        current_context
     )
 
 
@@ -138,7 +139,7 @@ def get_partial_hierarchical(
 
         current = current[key]
 
-    return None
+    return None if isinstance(current, dict) else current
 
 
 VECTOR_SEPARATOR = ','

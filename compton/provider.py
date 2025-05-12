@@ -26,7 +26,10 @@ class Provider(ABC):
 
     _dispatch: Optional[Dispatcher]
 
-    __str__ = partialmethod(stringify, 'provider')
+    __str__ = partialmethod(stringify, 'provider')  # type: ignore
+    # partialmethod is not supported by mypy,
+    # https://github.com/python/mypy/issues/8619
+    # so we just ignore it
 
     @staticmethod
     def check(provider: Any) -> None:

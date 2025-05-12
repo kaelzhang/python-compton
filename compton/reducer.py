@@ -2,7 +2,8 @@ from abc import ABC, abstractmethod
 from functools import partialmethod
 from typing import (
     Optional,
-    Tuple
+    Tuple,
+    Dict
 )
 
 from .common import (
@@ -19,7 +20,12 @@ class Reducer(ABC):
     """
     """
 
-    __str__ = partialmethod(stringify, 'reducer')
+    _not_updated: Dict[Tuple[Symbol, Vector], Optional[Payload]]
+
+    __str__ = partialmethod(stringify, 'reducer')  # type: ignore
+    # partialmethod is not supported by mypy,
+    # https://github.com/python/mypy/issues/8619
+    # so we just ignore it
 
     @staticmethod
     def check(reducer) -> None:

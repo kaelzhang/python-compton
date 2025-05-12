@@ -14,11 +14,13 @@ from .consumer import (
 from .reducer import Reducer
 
 from .common import (
+    HierarchicalDict,
+
     match_vector,
     stringify_vector,
-    set_hierachical,
-    get_hierachical,
-    get_partial_hierachical,
+    set_hierarchical,
+    get_hierarchical,
+    get_partial_hierarchical,
 
     Vector,
     Symbol,
@@ -35,9 +37,10 @@ class Orchestrator:
 
     MAX_INIT_RETRIES = 3
 
+    _store: HierarchicalDict[Payload]
     _providers: Dict[Vector, Provider]
-    _subscribed: Dict[Vector, List[Consumer]]
-    _reducers: Iterable[Reducer]
+    _subscribed: Dict[Vector, List[ConsumerSentinel]]
+    _reducers: HierarchicalDict[Reducer]
     _added: Set[Symbol]
 
     def __init__(
@@ -82,9 +85,9 @@ class Orchestrator:
 
             vector = reducer.vector
 
-            # We set hierachically for reducers, because
+            # We set hierarchically for reducers, because
             # we allow reducers to do a semi matching
-            success, context = set_hierachical(
+            success, context = set_hierarchical(
                 saved_reducers, vector, reducer, False)
 
             if not success:
@@ -102,7 +105,7 @@ class Orchestrator:
         Provider.check(provider)
 
         vector = provider.vector
-        reducer = get_partial_hierachical(self._reducers, vector)
+        reducer = get_partial_hierarchical(self._reducers, vector)
 
         if reducer is None:
             raise KeyError(
@@ -144,7 +147,7 @@ class Orchestrator:
                 raise KeyError(f'a provider{vector_str} must be defined before subscribing to {vector_str}')  # noqa:E501
 
             if vector not in self._subscribed:
-                consumers = []
+                consumers: List[ConsumerSentinel] = []
                 self._subscribed[vector] = consumers
             else:
                 consumers = self._subscribed[vector]
@@ -181,7 +184,7 @@ class Orchestrator:
         if symbol not in self._added:
             return
 
-        reducer = get_partial_hierachical(self._reducers, vector)
+        reducer = get_partial_hierarchical(self._reducers, vector)
 
         if reducer is None:
             raise KeyError(
@@ -189,7 +192,7 @@ class Orchestrator:
             )
 
         store_vector = (symbol, vector)
-        previous = get_hierachical(self._store, store_vector)
+        previous = get_hierarchical(self._store, store_vector)
 
         # We need to try-catch this method,
         # because it won't be raised to the outside and interrupt the program.
@@ -211,7 +214,7 @@ class Orchestrator:
         vector,
         payload
     ) -> None:
-        set_hierachical(self._store, (symbol, vector), payload, True)
+        set_hierarchical(self._store, (symbol, vector), payload, True)
         self._emit(symbol, vector)
 
     def _emit(self, symbol, vector) -> None:
