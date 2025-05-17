@@ -2,7 +2,7 @@ files = compton test
 test_files = *
 
 test:
-	pytest -s -v test/test_$(test_files).py --doctest-modules --cov compton --cov-config=.coveragerc --cov-report term-missing
+	PYTHONTRACEMALLOC=20 pytest -s -v test/test_$(test_files).py --doctest-modules --cov compton --cov-config=.coveragerc --cov-report term-missing
 
 install:
 	pip install -U .[dev]

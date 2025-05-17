@@ -2,7 +2,7 @@ import asyncio
 import logging
 from functools import partial
 from typing import (
-    Dict, FrozenSet, Iterable, List, Set
+    Dict, FrozenSet, Iterable, List, Set, Coroutine
 )
 
 from .provider import Provider
@@ -38,6 +38,7 @@ class Orchestrator:
     MAX_INIT_RETRIES = 3
 
     _store: HierarchicalDict[Payload]
+    _tasks: Dict[Symbol, asyncio.Task]
     _providers: Dict[Vector, Provider]
     _subscribed: Dict[Vector, List[ConsumerSentinel]]
     _reducers: HierarchicalDict[Reducer]
@@ -52,7 +53,7 @@ class Orchestrator:
         self._providers = {}
         self._subscribed = {}
         self._reducers = {}
-
+        self._tasks = {}
         self._added = set()
 
         self._apply_reducers(reducers)
@@ -73,6 +74,9 @@ class Orchestrator:
         loop = asyncio.get_event_loop()
         self.__loop = loop
         return loop
+
+    def _create_task(self, coro: Coroutine) -> asyncio.Task:
+        return self._loop.create_task(coro)
 
     def _apply_reducers(
         self,
@@ -255,9 +259,34 @@ class Orchestrator:
         if symbol not in self._added:
             self._added.add(symbol)
 
-            self._loop.create_task(self._start_providers(symbol))
+            self._start_symbol_task(symbol)
 
         return self
+
+    def _start_symbol_task(
+        self,
+        symbol: Symbol
+    ) -> None:
+        if symbol not in self._added:
+            return
+
+        task = self._create_task(self._start_providers(symbol))
+        self._tasks[symbol] = task
+
+        task.add_done_callback(lambda _: self._remove_symbol_task(symbol))
+
+    def _remove_symbol_task(
+        self,
+        symbol: Symbol,
+        cancel: bool = False
+    ) -> None:
+        task = self._tasks.get(symbol, None)
+
+        if task:
+            if cancel:
+                task.cancel()
+
+            del self._tasks[symbol]
 
     def remove(
         self,
@@ -275,11 +304,13 @@ class Orchestrator:
             for provider in self._providers.values():
                 provider.remove(symbol)
 
+            self._remove_symbol_task(symbol, cancel=True)
+
         return self
 
     async def _start_providers(self, symbol: Symbol):
         tasks = [
-            asyncio.create_task(self._start_provider(symbol, provider))
+            self._create_task(self._start_provider(symbol, provider))
             for provider in self._providers.values()
         ]
         await asyncio.wait(tasks)

@@ -278,7 +278,8 @@ def test_subscribe_provider_not_found():
         )
 
 
-def test_dispatch_reducer_not_found():
+@pytest.mark.asyncio
+async def test_dispatch_reducer_not_found():
     with pytest.raises(
         KeyError,
         match='reducer<DataType.KLINE,TimeSpan.DAY> is not found'
@@ -296,7 +297,7 @@ def test_dispatch_in_non_coroutine():
         RuntimeError,
         match='should only be invoked in a coroutine'
     ):
-        Orchestrator([]).add(symbol).dispatch(
+        Orchestrator([]).dispatch(
             vector,
             symbol,
             {}
