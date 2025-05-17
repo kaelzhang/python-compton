@@ -1,5 +1,5 @@
 import asyncio
-from typing import Union
+from typing import Optional, Union
 
 from compton import (
     Provider,
@@ -28,13 +28,26 @@ vector2 = (DataType.KLINE, TimeSpan.WEEK)
 
 class SimpleProvider(Provider):
     MAX: Union[int, float] = 3
+    __future: Optional[asyncio.Future] = None
 
-    def __init__(self, i=0, update_delay=0):
-        self._future = asyncio.Future()
+    def __init__(
+        self,
+        i=0,
+        update_delay=0,
+        has_init_delay=True
+    ):
         self._i = i
         self._discarded = set()
         self._dispatch = None
         self._update_delay = update_delay
+        self._has_init_delay = has_init_delay
+
+    @property
+    def _future(self):
+        if self.__future is None:
+            self.__future = asyncio.Future()
+
+        return self.__future
 
     @property
     def vector(self):
@@ -42,7 +55,10 @@ class SimpleProvider(Provider):
 
     async def init(self, symbol):
         asyncio.create_task(self._update())
-        await self._future
+
+        if self._has_init_delay:
+            await self._future
+
         return dict(i=0)
 
     def remove(self, symbol):
@@ -66,11 +82,13 @@ class SimpleProvider(Provider):
 
 
 class SimpleProvider2(SimpleProvider):
-    def __init__(self):
+    def __init__(self, *args, **kwargs):
         super().__init__(
             1,
             # make sure SimpleProvider2 always comes after SimpleProvider1
-            0.01
+            0.01,
+            *args,
+            **kwargs
         )
 
     @property

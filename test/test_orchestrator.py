@@ -26,8 +26,12 @@ def test_no_concurrent_limit_and_outside_event_loop():
     loop = asyncio.new_event_loop()
 
     consumer = SimpleConsumer4()
-    provider = SimpleProvider().go()
-    provider2 = SimpleProvider2().go()
+    provider = SimpleProvider(
+        has_init_delay=False
+    )
+    provider2 = SimpleProvider2(
+        has_init_delay=False
+    )
 
     orchestrator = Orchestrator(
         [SimpleReducer()],
