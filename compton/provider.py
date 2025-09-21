@@ -72,4 +72,8 @@ class Provider(ABC):
     ) -> None:  # pragma: no cover
         """Sets the receiver to receive update messages
         """
+
+        # So that we can directly use `self.dispatch` in the provider,
+        # However, we could override this method in the provider
+        #   to do something else
         self.dispatch = dispatch

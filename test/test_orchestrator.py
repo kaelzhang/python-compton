@@ -302,3 +302,19 @@ def test_dispatch_in_non_coroutine():
             symbol,
             {}
         )
+
+@pytest.mark.asyncio
+async def test_dispatch_with_provider_init_none_payload():
+    class NoneProvider(SimpleProvider):
+        async def init(self, symbol):
+            return None
+
+    consumer = SimpleConsumer()
+
+    Orchestrator([SimpleReducer()]).connect(
+        NoneProvider().go()
+    ).subscribe(
+        consumer
+    ).add(symbol)
+
+    assert not consumer.consumed

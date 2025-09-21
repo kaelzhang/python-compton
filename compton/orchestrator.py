@@ -33,6 +33,7 @@ logger = logging.getLogger(__name__)
 
 class Orchestrator:
     """
+    The orchestrator is the core of the compton framework.
     """
 
     MAX_INIT_RETRIES = 3
@@ -334,6 +335,9 @@ class Orchestrator:
                 )
 
             logger.error('give up init symbol "%s"', symbol)
+            return
+
+        if payload is None:
             return
 
         self._dispatch(True, provider.vector, symbol, payload)
