@@ -1,5 +1,6 @@
 files = compton test
 test_files = *
+# test_files = orchestrator
 
 test:
 	PYTHONTRACEMALLOC=20 pytest -s -v test/test_$(test_files).py --doctest-modules --cov compton --cov-config=.coveragerc --cov-report term-missing

@@ -317,4 +317,6 @@ async def test_dispatch_with_provider_init_none_payload():
         consumer
     ).add(symbol)
 
+    await asyncio.sleep(1)
+
     assert not consumer.consumed
