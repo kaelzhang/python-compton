@@ -107,9 +107,9 @@ class SimpleProvider5(SimpleProvider):
 
 class SimpleReducer(Reducer):
     @property
-    def vector(self):
+    def vectors(self):
         # It is a generic reducer for all kinds of klines
-        return (DataType.KLINE,)
+        return [(DataType.KLINE,)]
 
     def merge(self, old, new):
         if old is None:
@@ -125,8 +125,8 @@ class SimpleReducer(Reducer):
 
 class SimpleReducer2(SimpleReducer):
     @property
-    def vector(self):
-        return (DataType.KLINE, TimeSpan.DAY)
+    def vectors(self):
+        return [(DataType.KLINE, TimeSpan.DAY)]
 
 
 class SimpleReducer3(SimpleReducer):

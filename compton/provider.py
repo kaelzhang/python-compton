@@ -7,7 +7,7 @@ from typing import (
 )
 
 from .common import (
-    stringify,
+    v_stringify,
     check_vector,
 
     Vector,
@@ -26,7 +26,7 @@ class Provider(ABC):
 
     _dispatch: Optional[Dispatcher]
 
-    __str__ = partialmethod(stringify, 'provider')  # type: ignore
+    __str__ = partialmethod(v_stringify, 'provider')  # type: ignore
     # partialmethod is not supported by mypy,
     # https://github.com/python/mypy/issues/8619
     # so we just ignore it

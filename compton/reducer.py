@@ -3,12 +3,13 @@ from functools import partialmethod
 from typing import (
     Optional,
     Tuple,
-    Dict
+    Dict,
+    Iterable
 )
 
 from .common import (
-    stringify,
-    check_vector,
+    vs_stringify,
+    check_vectors,
 
     Vector,
     Symbol,
@@ -22,7 +23,7 @@ class Reducer(ABC):
 
     _not_updated: Dict[Tuple[Symbol, Vector], Optional[Payload]]
 
-    __str__ = partialmethod(stringify, 'reducer')  # type: ignore
+    __str__ = partialmethod(vs_stringify, 'reducer')  # type: ignore
     # partialmethod is not supported by mypy,
     # https://github.com/python/mypy/issues/8619
     # so we just ignore it
@@ -34,14 +35,14 @@ class Reducer(ABC):
                 f'reducer must be an instance of Reducer, but got `{reducer}`'  # noqa: E501
             )
 
-        check_vector(reducer.vector, reducer)
+        check_vectors(reducer.vectors, reducer)
 
     def __init__(self) -> None:
         self._not_updated = {}
 
     @property
     @abstractmethod
-    def vector(self) -> Vector:  # pragma: no cover
+    def vectors(self) -> Iterable[Vector]:  # pragma: no cover
         """The vector of a reducer could be a more generic vector which is much
         shorter.
 
@@ -64,8 +65,7 @@ class Reducer(ABC):
             payload (Payload):
             symbol (str):
             vector (tuple):
-            init (bool): If `True`, payload
-            will be treated as the initial value
+            init (bool): If `True`, payload will be treated as the initial value
 
         Returns:
             Tuple[bool, Optional[Payload]]:

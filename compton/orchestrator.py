@@ -88,17 +88,18 @@ class Orchestrator:
         for reducer in reducers:
             Reducer.check(reducer)
 
-            vector = reducer.vector
+            vectors = reducer.vectors
 
-            # We set hierarchically for reducers, because
-            # we allow reducers to do a semi matching
-            success, context = set_hierarchical(
-                saved_reducers, vector, reducer, False)
+            for vector in vectors:
+                # We set hierarchically for reducers, because
+                # we allow reducers to do a semi matching
+                success, context = set_hierarchical(
+                    saved_reducers, vector, reducer, False)
 
-            if not success:
-                raise ValueError(
-                    f'a reducer{stringify_vector(context)} already exists'
-                )
+                if not success:
+                    raise ValueError(
+                        f'a reducer{stringify_vector(context)} already exists'
+                    )
 
     def connect(
         self,

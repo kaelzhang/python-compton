@@ -1,5 +1,6 @@
 import logging
 from abc import ABC, abstractmethod
+from functools import partialmethod
 from typing import (
     List,
     Optional,
@@ -9,8 +10,8 @@ from typing import (
 )
 
 from .common import (
-    check_vector,
-    stringify_vector,
+    check_vectors,
+    vs_stringify,
 
     Payload,
     Vector,
@@ -26,19 +27,9 @@ class Consumer(ABC):
                 f'consumer must be an instance of Consumer, but got `{consumer}`'  # noqa: E501
             )
 
-        for vector in consumer.vectors:
-            check_vector(vector, consumer)
+        check_vectors(consumer.vectors, consumer)
 
-    def __str__(self) -> str:
-        try:
-            vectors = stringify_vector([
-                stringify_vector(vector)
-                for vector in self.vectors
-            ])
-        except Exception:
-            return 'consumer<invalid>'
-
-        return f'consumer{vectors}'
+    __str__ = partialmethod(vs_stringify, 'consumer')  # type: ignore
 
     @property
     @abstractmethod

@@ -149,7 +149,7 @@ def stringify_vector(list_like: Iterable[Hashable]) -> str:
     return f'<{VECTOR_SEPARATOR.join([str(x) for x in list_like])}>'
 
 
-def stringify(self, name: str) -> str:
+def v_stringify(self, name: str) -> str:
     try:
         vector_str = stringify_vector(self.vector)
     except Exception:
@@ -158,12 +158,34 @@ def stringify(self, name: str) -> str:
     return name + vector_str
 
 
+def vs_stringify(self, name: str) -> str:
+    try:
+        vectors = stringify_vector([
+            stringify_vector(vector)
+            for vector in self.vectors
+        ])
+    except Exception:
+        return f'{name}<invalid>'
+
+    return name + vectors
+
+
 def is_hashable(subject: Any) -> bool:
     try:
         hash(subject)
         return True
     except Exception:
         return False
+
+
+def check_vectors(vectors: Any, target):
+    if not isinstance(vectors, Iterable):
+        raise ValueError(
+            f'vectors of {target} must be an iterable, but got `{vectors}`'
+        )
+
+    for vector in vectors:
+        check_vector(vector, target)
 
 
 def check_vector(vector, target):
