@@ -269,26 +269,24 @@ class Orchestrator:
         self,
         symbol: Symbol
     ) -> None:
-        if symbol not in self._added:
-            return
-
         task = self._create_task(self._start_providers(symbol))
         self._tasks[symbol] = task
 
         task.add_done_callback(lambda _: self._remove_symbol_task(symbol))
 
-    def _remove_symbol_task(
+    def _cancel_symbol_task(
         self,
-        symbol: Symbol,
-        cancel: bool = False
+        symbol: Symbol
     ) -> None:
         task = self._tasks.get(symbol, None)
-
         if task:
-            if cancel:
-                task.cancel()
+            task.cancel()
 
-            del self._tasks[symbol]
+    def _remove_symbol_task(
+        self,
+        symbol: Symbol
+    ) -> None:
+        del self._tasks[symbol]
 
     def remove(
         self,
@@ -306,7 +304,7 @@ class Orchestrator:
             for provider in self._providers.values():
                 provider.remove(symbol)
 
-            self._remove_symbol_task(symbol, cancel=True)
+            self._cancel_symbol_task(symbol)
 
         return self
 

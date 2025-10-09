@@ -129,12 +129,13 @@ class ConsumerSentinel:
 
         self._processing += 1
 
-        loop.create_task(self._process(symbol, payloads))
+        task = loop.create_task(self._consumer.process(symbol, *payloads))
+        task.add_done_callback(self._on_process_done)
 
-    async def _process(self, symbol, payloads):
-        try:
-            await self._consumer.process(symbol, *payloads)
-        except Exception as e:
-            logger.error('consumer process error: %s', e)
-        finally:
-            self._processing -= 1
+    def _on_process_done(self, task):
+        """Handle task completion and cleanup"""
+        # Check if task completed with an exception
+        if task.exception() is not None:
+            logger.error('consumer process error: %s', task.exception())
+
+        self._processing -= 1
