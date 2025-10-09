@@ -34,13 +34,15 @@ class SimpleProvider(Provider):
         self,
         i=0,
         update_delay=0,
-        has_init_delay=True
+        has_init_delay=True,
+        update_immediately=True
     ):
         self._i = i
         self._discarded = set()
         self._dispatch = None
         self._update_delay = update_delay
         self._has_init_delay = has_init_delay
+        self._update_immediately = update_immediately
 
     @property
     def _future(self):
@@ -54,10 +56,14 @@ class SimpleProvider(Provider):
         return vector
 
     async def init(self, symbol):
-        asyncio.create_task(self._update())
+        if self._update_immediately:
+            asyncio.create_task(self._update())
 
         if self._has_init_delay:
             await self._future
+
+        if not self._update_immediately:
+            asyncio.create_task(self._update())
 
         return dict(i=0)
 

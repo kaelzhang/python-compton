@@ -195,6 +195,25 @@ async def test_main_with_deferred_init():
     assert consumer.consumed == [2]
 
 
+@pytest.mark.asyncio
+async def test_main_with_remove_immediately():
+    consumer = SimpleConsumer()
+    provider = SimpleProvider(
+        update_immediately=False
+    )
+
+    Orchestrator(
+        [SimpleReducer()]
+    ).connect(
+        provider
+    ).subscribe(
+        consumer
+    ).add(symbol).remove(symbol)
+
+    await asyncio.sleep(1)
+    assert consumer.consumed == []
+
+
 def test_reducer_exists():
     with pytest.raises(
         ValueError,
